@@ -53,7 +53,10 @@ void mmove(int x, int y) {
 
 void on_char(char ch) {}
 
-int main() {
+int main(int argc, char **argv) {
+	if (argc == 2)
+		game.level = atoi(argv[1]) - 1;
+
 	if (!game.Initialize())
 		return 1;
 

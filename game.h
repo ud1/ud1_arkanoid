@@ -80,10 +80,10 @@ struct Game {
 	void LoadLevel(const Level &l);
 
 	bool isRunning;
+	int level;
 protected:
 	State prev_state; // Saved by Pause()
 	int reserve_balls;
-	int level;
 	
 	Level level_conf;
 
@@ -119,4 +119,5 @@ protected:
 
 	Vector GetGravity() const;
 	void SetupBonuses();
+	void ResetBonuses();
 };

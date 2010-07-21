@@ -84,6 +84,10 @@ struct World {
 		}
 	}
 
+	void NewBall(const Ball &b) {
+		new_balls.push_back(b);
+	}
+
 protected:
 	void SimulateDelta(float delta_t) {
 		while (delta_t > 0.0f) {
@@ -98,11 +102,12 @@ protected:
 	bool TryToSimulate(float delta_t);
 
 	void RemoveOutBalls();
-
 	void RemoveOutBonuses();
+	void AddNewBalls();
 
 	std::set<UnmovableObject *> for_deletion;
 	std::set<UnmovableObject *> active_blocks;
+	std::vector<Ball> new_balls;
 };
 
 

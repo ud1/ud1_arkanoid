@@ -7,6 +7,7 @@ struct Ball {
 	int collide_number;
 	float rotation_speed; // omega*rad, >0 ccw
 	float rad, friction;
+	bool pos_updated;
 
 	Ball() {
 		collide_number = 0;

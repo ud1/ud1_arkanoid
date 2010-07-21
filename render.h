@@ -68,7 +68,7 @@ protected:
 	void RenderUnmovableObject(const UnmovableObject &obj);
 	void StartRenderField(const Vector &field_logic_size);
 	void StartRenderStat() ;
-	void RenderBall(const Ball &b);
+	void RenderBall(Ball &b);
 	void RenderBonus(const Bonus &b);
 	void RenderStatsPanel();
 	void RenderScore();

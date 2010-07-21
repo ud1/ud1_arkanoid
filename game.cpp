@@ -30,12 +30,12 @@ void Game::InitializeField() {
 	float logic_height = form_config.field.logic_height;
 	Wall wall;
 	// bottom
-	/*wall.p1 = Vector(0.0f, 0.0f);
+	wall.p1 = Vector(0.0f, 0.0f);
 	wall.angle = 0.0f;
 	wall.angular_velocity = 0.0f;
 	wall.length = logic_width;
 	wall.velocity = Vector(0.0f, 0.0f);
-	world.walls.push_back(wall);*/
+	world.walls.push_back(wall);
 
 	// right wall
 	wall.p1 = Vector(logic_width, 0.0f);
@@ -145,8 +145,6 @@ void Game::Run() {
 }
 
 void Game::ResetPlatform() {
-	platform_bonus = 0;
-	score.platform_bonus = 1.0f;
 	float logic_width = form_config.field.logic_width;
 	float logic_height = form_config.field.logic_height;
 	world.player_platform.SetPrototype(&platform_proto);
@@ -163,7 +161,7 @@ void Game::ResetBall() {
 
 void Game::SetupBall() {
 	Ball ball;
-	ball.gravity = Vector(0.0f, -10.0f);
+	ball.gravity = GetGravity();
 	ball.velocity = Vector(0.0f, 0.0f);
 	ball.position = Vector(form_config.field.logic_width/2.0f, 2.0f);
 	ball.rad = 0.1f;
@@ -179,11 +177,11 @@ void Game::ThrowBall() {
 
 void Game::NewBall(const Vector &pos, const Vector &vel) {
 	Ball ball;
-	ball.gravity = Vector(0.0f, -10.0f);
+	ball.gravity = GetGravity();
 	ball.velocity = vel;
 	ball.position = pos;
 	ball.rad = 0.1f;
-	world.balls.push_back(ball);
+	world.NewBall(ball);
 }
 
 
@@ -198,12 +196,14 @@ void Game::ActivateBonus(const Bonus &bonus) {
 		platform_bonus = BONUS_LONG_PLATFORM;
 		platform_bonus_untill = timer.GlobalTime() + level_conf.platform_bonus_time;
 		world.player_platform.SetScale(level_conf.long_platform_scale);
+		world.player_platform.InitPosition(world.player_platform.GetPosition());
 		score.platform_bonus = 0.5f;
 		break;
 	case BONUS_SHORT_PLATFORM:
 		platform_bonus = BONUS_SHORT_PLATFORM;
 		platform_bonus_untill = timer.GlobalTime() + level_conf.platform_bonus_time;
 		world.player_platform.SetScale(level_conf.short_platform_scale);
+		world.player_platform.InitPosition(world.player_platform.GetPosition());
 		score.platform_bonus = 2.0f;
 		break;
 	case BONUS_GRAVITY_LEFT:
@@ -322,6 +322,7 @@ void Game::DoBallLoss() {
 	if (next_state_switch_time <= timer.GlobalTime()) {
 		state = SIMULATION;
 		state_switch = true;
+		ResetBonuses();
 		ResetPlatform();
 		ResetBall();
 	}
@@ -340,6 +341,9 @@ void Game::DoNewLevel() {
 
 	if (state_switch) {
 		state_switch = false;
+
+		if (world.ActiveBlockNumber())
+			return;
 		
 		global_time = 0.0;
 		timer.ResetGlobalTime(0.0);
@@ -458,4 +462,18 @@ void Game::SetupBonuses() {
 		timer.SetTimeAcceleration(1.0f);
 		score.time_bonus = 1.0f;
 	}
+}
+
+void Game::ResetBonuses() {
+	platform_bonus = 0;
+	world.player_platform.SetScale(level_conf.platform_scale);
+	score.platform_bonus = 1.0f;
+
+	gravity_bonus = 0;
+	world.SetGravity(level_conf.gravity);
+	score.gravity_bonus = 1.0f;
+
+	time_bonus = 0;
+	timer.SetTimeAcceleration(1.0f);
+	score.time_bonus = 1.0f;
 }

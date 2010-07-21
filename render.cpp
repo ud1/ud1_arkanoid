@@ -103,8 +103,9 @@ void RenderData::StartRenderStat() {
 	glLoadIdentity ();
 }
 
-void RenderData::RenderBall(const Ball &b) {
-	const BallRenderData::BallRect &ball_rect = ball_rdata.balls[b.collide_number % ball_rdata.balls.size()];
+void RenderData::RenderBall(Ball &b) {
+	b.collide_number %= ball_rdata.balls.size();
+	const BallRenderData::BallRect &ball_rect = ball_rdata.balls[b.collide_number];
 
 	glColor3f(1,1,1);
 	glEnable(GL_TEXTURE_2D);

@@ -27,7 +27,7 @@ bool Level::LoadFromFile(const char *filename) {
 				>> info.pos.x >> info.pos.y >> info.angle >> info.points 
 				>> info.is_static >> info.bonus).fail())
 			{
-				info.angle *= (float) M_PI;
+				info.angle *= (float) M_PI / 180.0f;
 				bricks.push_back(info);
 			}
 		} else if (cmd == "balls") {

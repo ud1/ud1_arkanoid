@@ -107,6 +107,57 @@ bool BallToPhysObjNewCollided(const Ball &b, const Wall &w, float delta_t) {
 	return BallToPhysObjDistanceLight(tmp_ball, w) <= 0.0f;
 }
 
+
+
+template<>
+DistanceInfo BallToPhysObjDistance(const Ball &b1, const Ball &b2) {
+	DistanceInfo res;
+	Vector b2_b1 = b1.position - b2.position;
+	res.distance = b2_b1.Length() - b1.rad - b2.rad;
+
+	res.normal = b2_b1;
+	res.normal.Normalize();
+	res.closest_point = b2.position + res.normal * b2.rad;
+	res.velocity = (b2.velocity - b1.velocity).Dot(res.normal);
+	res.rotation_speed = -(b1.rotation_speed + b2.rotation_speed);
+	return res;
+}
+
+template <>
+bool BallToPhysObjCollided(const Ball &b1, const Ball &b2) {
+	float rad2 = b1.rad + b2.rad;
+	rad2 *= rad2;
+
+	return (b1.position - b2.position).Length2() <= rad2;
+}
+
+template<>
+DistanceInfo BallToPhysObjNewDistance(const Ball &b1, const Ball &b2, float delta_t) {
+	Ball tmp_ball1;
+	tmp_ball1 = b1;
+	tmp_ball1.Move(delta_t);
+
+	Ball tmp_ball2;
+	tmp_ball2 = b2;
+	tmp_ball2.Move(delta_t);
+	return BallToPhysObjDistance(tmp_ball1, tmp_ball2);
+}
+
+template<>
+bool BallToPhysObjNewCollided(const Ball &b1, const Ball &b2, float delta_t) {
+	Ball tmp_ball1;
+	tmp_ball1 = b1;
+	tmp_ball1.Move(delta_t);
+
+	Ball tmp_ball2;
+	tmp_ball2 = b2;
+	tmp_ball2.Move(delta_t);
+	return BallToPhysObjCollided(tmp_ball1, tmp_ball2);
+}
+
+
+
+
 template<>
 DistanceInfo BallToPhysObjDistance(const Ball &b, const UnmovableObject &obj) {
 	const std::vector<Segment> &segs = obj.GetSegments();
