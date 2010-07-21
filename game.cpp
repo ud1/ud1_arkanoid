@@ -30,12 +30,12 @@ void Game::InitializeField() {
 	float logic_height = form_config.field.logic_height;
 	Wall wall;
 	// bottom
-	wall.p1 = Vector(0.0f, 0.0f);
+	/*wall.p1 = Vector(0.0f, 0.0f);
 	wall.angle = 0.0f;
 	wall.angular_velocity = 0.0f;
 	wall.length = logic_width;
 	wall.velocity = Vector(0.0f, 0.0f);
-	world.walls.push_back(wall);
+	world.walls.push_back(wall);*/
 
 	// right wall
 	wall.p1 = Vector(logic_width, 0.0f);
@@ -237,6 +237,7 @@ void Game::ActivateBonus(const Bonus &bonus) {
 void Game::LoadLevel(const Level &l) {
 	world.Clear();
 	InitializeField();
+	ResetBonuses();
 	ResetPlatform();
 	ResetBall();
 	reserve_balls = l.reserve_balls_number;

@@ -112,31 +112,32 @@ void World::SimulateUntil(float t) {
 }
 
 bool World::TryToSimulate(float delta_t) {
+	size_t balls_size = balls.size();
 	// Check for collisions
 	if (delta_t > min_delta_t) {
-		for (size_t i = 0; i < balls.size(); ++i) {
+		for (size_t i = 0; i < balls_size; ++i) {
 			for (size_t j = 0; j < walls.size(); ++j) {
 				if (BallToPhysObjNewCollided(balls[i], walls[j], delta_t))
 					return false;
 			}
 		}
 
-		for (size_t i = 0; i < balls.size(); ++i) {
+		for (size_t i = 0; i < balls_size; ++i) {
 			for (auto it = unmvbl_objs.begin(); it != unmvbl_objs.end(); ++it) {
 				if (BallToPhysObjNewCollided(balls[i], **it, delta_t))
 					return false;
 			}
 		}
 
-		for (size_t i = 0; i < balls.size(); ++i) {
+		for (size_t i = 0; i < balls_size; ++i) {
 			if (BallToPhysObjNewCollided(balls[i], player_platform, delta_t))
 				return false;
 		}
 
-		for (size_t i = 0; i < balls.size(); ++i) {
-			for (size_t j = i+1; j < balls.size(); ++j) {
+		for (size_t i = 0; i < balls_size; ++i) {
+			for (size_t j = i+1; j < balls_size; ++j) {
 				if (BallToPhysObjNewCollided(balls[i], balls[j], delta_t))
-				return false;
+					return false;
 			}
 		}
 
@@ -147,11 +148,11 @@ bool World::TryToSimulate(float delta_t) {
 	}
 
 	// Update positions
-	for (size_t i = 0; i < balls.size(); ++i) {
+	for (size_t i = 0; i < balls_size; ++i) {
 		balls[i].pos_updated = false;
 	}
 
-	for (size_t i = 0; i < balls.size(); ++i) {
+	for (size_t i = 0; i < balls_size; ++i) {
 		Ball &ball = balls[i];
 
 		for (size_t j = 0; j < walls.size(); ++j) {
@@ -164,7 +165,7 @@ bool World::TryToSimulate(float delta_t) {
 				ball.pos_updated |= CollideBallToPhysObj(ball, **it, delta_t);
 		}
 
-		for (size_t j = i+1; j < balls.size(); ++j) {
+		for (size_t j = i+1; j < balls_size; ++j) {
 			if (BallToPhysObjNewCollided(ball, balls[j], delta_t))
 				CollideBallToBall(ball, balls[j], delta_t);
 		}
@@ -182,7 +183,7 @@ bool World::TryToSimulate(float delta_t) {
 		Bonus &bonus = *it;
 		if (BallToPhysObjNewCollided((const Ball &)bonus, player_platform, delta_t)) {
 			bonus.Collide();
-			bonuses.erase(it);
+			it = bonuses.erase(it);
 		} else {
 			bonus.Move(delta_t);
 			++it;

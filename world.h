@@ -68,6 +68,10 @@ struct World {
 
 		walls.clear();
 		balls.clear();
+		bonuses.clear();
+		for_deletion.clear();
+		active_blocks.clear();
+		new_balls.clear();
 	}
 
 	float SpeedBonus(const Vector &field_logic_size) const {
