@@ -444,6 +444,7 @@ void Game::DoFinal() {
 		level = 0;
 		reserve_balls = 0;
 		score.Reset();
+		world.Clear();
 		state = NEW_LEVEL;
 		state_switch = true;
 		ShowCursor(FALSE);
