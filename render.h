@@ -65,7 +65,7 @@ protected:
 	GLuint elements_textureID, stat_textureID, background_textureID;
 
 	void RenderBackground();
-	void RenderUnmovableObject(const UnmovableObject &obj);
+	void RenderUnmovableObjectsAndPlatform();
 	void StartRenderField(const Vector &field_logic_size);
 	void StartRenderStat() ;
 	void RenderBall(Ball &b);

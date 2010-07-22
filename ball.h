@@ -6,19 +6,17 @@ struct Ball {
 	Vector position, velocity, gravity;
 	int collide_number;
 	float rotation_speed; // omega*rad, >0 ccw
-	float rad, friction;
+	float rad;
 	bool pos_updated;
 
 	Ball() {
 		collide_number = 0;
-		friction = 0.0f;
 		rotation_speed = 0.0f;
 	}
 
 	void Move(float delta_t) {
-		Vector acceleration = gravity - velocity*(velocity.Length()*friction);
-		position = position + velocity*delta_t + acceleration*(delta_t*delta_t/2.0f);
-		velocity = velocity + acceleration*delta_t;
+		position = position + velocity*delta_t + gravity*(delta_t*delta_t/2.0f);
+		velocity = velocity + gravity*delta_t;
 	}
 
 	// Calculates speed bonus

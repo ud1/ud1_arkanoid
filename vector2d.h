@@ -30,7 +30,14 @@ struct Vector {
 	}
 
 	Vector Rotate(float angle) const {
-		return Vector(x*cos(angle) - y*sin(angle), x*sin(angle) + y*cos(angle));
+		float sina = sin(angle);
+		float cosa = cos(angle);
+		return Vector(x*cosa - y*sina, x*sina + y*cosa);
+	}
+
+	// little optimization
+	Vector Rotate(float sina, float cosa) const {
+		return Vector(x*cosa - y*sina, x*sina + y*cosa);
 	}
 
 	Vector RotateHalfPi() const {

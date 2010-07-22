@@ -20,6 +20,8 @@ void key_up(int key);
 void mmove(int x, int y);
 void on_char(char ch);
 
+void on_deactivate();
+
 LRESULT CALLBACK WindowProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	Window *window = Window::GetWindowInstance();
 	switch (uMsg) {
@@ -36,6 +38,16 @@ LRESULT CALLBACK WindowProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			info->ptMaxTrackSize.y = window->real_height;
 			break;
 		}
+
+	case WM_ACTIVATE:
+		if (wParam == WA_INACTIVE)
+			on_deactivate();
+		break;
+
+	case WM_ACTIVATEAPP:
+		if (wParam == FALSE)
+			on_deactivate();
+		break;
 
 	case WM_SIZE:
 		window->width = LOWORD(lParam);

@@ -23,7 +23,7 @@ bool Level::LoadFromFile(const char *filename) {
 			continue;
 		if (cmd == "brick") {
 			brick_info info;
-			if (!(iss >> info.type >> info.life >> info.scale.x >> info.scale.y
+			if (!(iss >> info.type >> info.life >> info.velocity_loss >> info.surf_friction_koef >> info.scale.x >> info.scale.y
 				>> info.pos.x >> info.pos.y >> info.angle >> info.points 
 				>> info.is_static >> info.bonus).fail())
 			{
@@ -53,6 +53,18 @@ bool Level::LoadFromFile(const char *filename) {
 
 		} else if (cmd == "bonus_time") {
 			iss >> platform_bonus_time >> gravity_bonus_time >> time_bonus_time;
+
+		} else if (cmd == "velocity_loss_wall") {
+			iss >> velocity_loss_wall;
+
+		} else if (cmd == "velocity_loss_platform") {
+			iss >> velocity_loss_platform;
+
+		} else if (cmd == "surf_friction_koef_wall") {
+			iss >> surf_friction_koef_wall;
+
+		} else if (cmd == "surf_friction_koef_platform") {
+			iss >> surf_friction_koef_platform;
 		}
 	}
 

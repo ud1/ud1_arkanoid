@@ -16,6 +16,11 @@ void lbdown(int x, int y) {}
 
 void lbup(int x, int y) {}
 
+void on_deactivate() {
+	if (game.GetState() != Game::PAUSE)
+		game.Pause();
+}
+
 void key_down(int key) {
 	float angle = 0.2f;
 	if (key == KEY_KEY_D) {

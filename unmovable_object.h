@@ -6,12 +6,19 @@
 
 struct UnmovableObject {
 	virtual ~UnmovableObject(){}
+
 	void SetPrototype(const ObjectPrototype *p) {
 		proto = p;
 	}
 
-	void SetPosition(const Vector &pos, const Vector &scale_, float angle_);
-	void SetPositionCollData(const Vector &pos, const Vector &scale_, float angle_);
+	// must be called after SetPrototype
+	void SetScale(const Vector &scale);
+
+	// must be called after SetScale
+	void SetPosition(const Vector &pos, float angle_);
+
+	// must be called after SetScale
+	void SetPositionCollData(const Vector &pos, float angle_);
 
 	virtual void Collide(){}
 
@@ -23,16 +30,18 @@ struct UnmovableObject {
 		return segs;
 	}
 
-	std::vector<RenderTriangle> render_triangles;
+	std::vector<RenderTriangle> render_triangles, proto_render_triangles;
 
 	// bounding circle radius
 	float GetMaxRad() const {
 		return max_radius;
 	}
 
+	float velocity_loss, surf_friction_koef;
+
 protected:
 	const ObjectPrototype *proto;
-	std::vector<Segment> segs;
+	std::vector<Segment> segs, proto_segs;
 	Vector position;
 	float angle;
 	Vector scale;

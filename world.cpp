@@ -1,96 +1,75 @@
 #include "world.h"
 
-#ifdef min
-#undef min
-#endif
+template<typename T>
+T Min(T a, T b) { return a < b ? a : b; }
 
-#ifdef max
-#undef max
-#endif
-
-#ifdef abs
-#undef abs
-#endif
-
-const float surf_friction_koef = 0.3f;
 const float ball_inertia_moment = 0.4f;
+const float ball_to_ball_surf_friction_koef = 0.4f;
 
 template<typename PhysObj>
-bool CollideBallToPhysObj(Ball &ball, PhysObj &obj, float delta_t) {
-	DistanceInfo dst_new = BallToPhysObjNewDistance(ball, obj, delta_t);
-	if (dst_new.distance < 0.0f) {
-		// Collision detected
-		DistanceInfo dst = BallToPhysObjDistance(ball, obj);
-		float time_to_collide = dst.distance / dst.velocity;
-		if (time_to_collide > delta_t)
-			time_to_collide = delta_t;
-		if (time_to_collide < 0.0f)
-			time_to_collide = 0.0f;
-		ball.Move(time_to_collide);
-		ball.velocity = ball.velocity + dst.normal * (2*dst.velocity);
-		float delta_rot_speed = std::min(std::abs(2*dst.velocity*surf_friction_koef/ball_inertia_moment), std::abs(dst.rotation_speed));
-		if (dst.rotation_speed < 0.0f)
-			delta_rot_speed = -delta_rot_speed;
-		ball.rotation_speed += delta_rot_speed;
-		ball.velocity = ball.velocity + dst.normal.RotateHalfPi()*(delta_rot_speed*ball_inertia_moment);
-		ball.Move(delta_t - time_to_collide);
+void CollideBallToPhysObj(Ball &ball, PhysObj &obj, float delta_t) {
+	DistanceInfo dst = BallToPhysObjDistance(ball, obj);
+	float time_to_collide = dst.distance / dst.velocity;
+	if (time_to_collide > delta_t)
+		time_to_collide = delta_t;
+	if (time_to_collide < 0.0f)
+		time_to_collide = 0.0f;
+	ball.Move(time_to_collide);
+	float vel_coef = 2.0f - obj.velocity_loss;
+	ball.velocity = ball.velocity + dst.normal * (vel_coef*dst.velocity);
+	float delta_rot_speed = Min(std::abs(vel_coef*dst.velocity*obj.surf_friction_koef/ball_inertia_moment), std::abs(dst.rotation_speed));
+	if (dst.rotation_speed < 0.0f)
+		delta_rot_speed = -delta_rot_speed;
+	ball.rotation_speed += delta_rot_speed;
+	ball.velocity = ball.velocity + dst.normal.RotateHalfPi()*(delta_rot_speed*ball_inertia_moment);
+	ball.Move(delta_t - time_to_collide);
 
-		dst = BallToPhysObjDistance(ball, obj);
-		if (dst.distance < 0.0f) {
-			//	inside obj, move to surface
-			ball.position = dst.closest_point + dst.normal*ball.rad;
-		}
-
-		ball.Collide();
-		obj.Collide();
-		return true;
+	dst = BallToPhysObjDistance(ball, obj);
+	if (dst.distance < 0.0f) {
+		//	inside obj, move to surface
+		ball.position = dst.closest_point + dst.normal*ball.rad;
 	}
-	return false;
+
+	ball.Collide();
+	obj.Collide();
 }
 
-bool CollideBallToBall(Ball &b1, Ball &b2, float delta_t) {
-	DistanceInfo dst_new = BallToPhysObjNewDistance(b1, b2, delta_t);
-	if (dst_new.distance < 0.0f) {
-		// Collision detected
-		DistanceInfo dst = BallToPhysObjDistance(b1, b2);
-		float time_to_collide = dst.distance / dst.velocity;
-		if (time_to_collide > delta_t)
-			time_to_collide = delta_t;
-		if (time_to_collide < 0.0f)
-			time_to_collide = 0.0f;
-		b1.Move(time_to_collide);
-		b2.Move(time_to_collide);
-		b1.velocity = b1.velocity + dst.normal * (dst.velocity);
-		b2.velocity = b2.velocity - dst.normal * (dst.velocity);
-		float delta_rot_speed = std::min(std::abs(dst.velocity*surf_friction_koef/ball_inertia_moment), std::abs(dst.rotation_speed/2.0f));
-		if (dst.rotation_speed < 0.0f)
-			delta_rot_speed = -delta_rot_speed;
-		b1.rotation_speed += delta_rot_speed;
-		b2.rotation_speed -= delta_rot_speed;
-		Vector tangent = dst.normal.RotateHalfPi();
-		b1.velocity = b1.velocity + tangent*(delta_rot_speed*ball_inertia_moment);
-		b2.velocity = b2.velocity - tangent*(delta_rot_speed*ball_inertia_moment);
-		b1.Move(delta_t - time_to_collide);
-		b2.Move(delta_t - time_to_collide);
+void CollideBallToBall(Ball &b1, Ball &b2, float delta_t) {
+	DistanceInfo dst = BallToPhysObjDistance(b1, b2);
+	float time_to_collide = dst.distance / dst.velocity;
+	if (time_to_collide > delta_t)
+		time_to_collide = delta_t;
+	if (time_to_collide < 0.0f)
+		time_to_collide = 0.0f;
+	b1.Move(time_to_collide);
+	b2.Move(time_to_collide);
+	b1.velocity = b1.velocity + dst.normal * (dst.velocity);
+	b2.velocity = b2.velocity - dst.normal * (dst.velocity);
+	float delta_rot_speed = std::min(std::abs(dst.velocity*ball_to_ball_surf_friction_koef/ball_inertia_moment), std::abs(dst.rotation_speed/2.0f));
+	if (dst.rotation_speed < 0.0f)
+		delta_rot_speed = -delta_rot_speed;
+	b1.rotation_speed += delta_rot_speed;
+	b2.rotation_speed -= delta_rot_speed;
+	Vector tangent = dst.normal.RotateHalfPi();
+	b1.velocity = b1.velocity + tangent*(delta_rot_speed*ball_inertia_moment);
+	b2.velocity = b2.velocity - tangent*(delta_rot_speed*ball_inertia_moment);
+	b1.Move(delta_t - time_to_collide);
+	b2.Move(delta_t - time_to_collide);
 
-		dst = BallToPhysObjDistance(b1, b2);
-		if (dst.distance < 0.0f) {
-			//	inside obj, move to surface
-			b1.position = dst.closest_point + dst.normal*b1.rad;
-		}
-
-		b1.Collide();
-		b2.Collide();
-
-		b1.pos_updated = true;
-		b2.pos_updated = true;
-
-		return true;
+	dst = BallToPhysObjDistance(b1, b2);
+	if (dst.distance < 0.0f) {
+		//	inside obj, move to surface
+		b1.position = dst.closest_point + dst.normal*b1.rad;
 	}
-	return false;
+
+	b1.Collide();
+	b2.Collide();
+
+	b1.pos_updated = true;
+	b2.pos_updated = true;
 }
 
-const float min_delta_t = 1.0f/2500.0f;
+const float min_delta_t = 1.0f/1500.0f;
 const float max_delta_t = 1.0f/500.0f;
 
 void World::SimulateUntil(float t) {
@@ -157,12 +136,12 @@ bool World::TryToSimulate(float delta_t) {
 
 		for (size_t j = 0; j < walls.size(); ++j) {
 			if (BallToPhysObjNewCollided(ball, walls[j], delta_t))
-				ball.pos_updated |= CollideBallToPhysObj(ball, walls[j], delta_t);
+				CollideBallToPhysObj(ball, walls[j], delta_t);
 		}
 
 		for (auto it = unmvbl_objs.begin(); it != unmvbl_objs.end(); ++it) {
 			if (BallToPhysObjNewCollided(ball, **it, delta_t))
-				ball.pos_updated |= CollideBallToPhysObj(ball, **it, delta_t);
+				CollideBallToPhysObj(ball, **it, delta_t);
 		}
 
 		for (size_t j = i+1; j < balls_size; ++j) {
@@ -171,7 +150,7 @@ bool World::TryToSimulate(float delta_t) {
 		}
 
 		if (BallToPhysObjNewCollided(ball, player_platform, delta_t))
-			ball.pos_updated |= CollideBallToPhysObj(ball, player_platform, delta_t);
+			CollideBallToPhysObj(ball, player_platform, delta_t);
 
 
 		if (!ball.pos_updated) {

@@ -17,18 +17,16 @@ struct PlayerPlatform : public UnmovableObject {
 		scale = o.scale;
 		angle = o.angle;
 		angular_speed = o.angular_speed;
-		proto = o.proto;
-	}
-
-	void SetScale(const Vector &s) {
-		scale = s;
+		max_radius = o.max_radius;
+		proto_segs = o.proto_segs;
+		segs.resize(proto_segs.size());
 	}
 
 	// Update only collision data
 	void MoveCollData(float delta_t) {
 		angle += angular_speed*delta_t;
 		position = position + velocity*delta_t;
-		SetPositionCollData(position, scale, angle);
+		SetPositionCollData(position, angle);
 
 		for (size_t i = 0; i < segs.size(); ++i) {
 			Segment &seg = segs[i];
@@ -61,7 +59,7 @@ struct PlayerPlatform : public UnmovableObject {
 	void InitPosition(const Vector &pos) {
 		SetTarget(pos);
 		position = target;
-		SetPosition(position, scale, 0.0f);
+		SetPosition(position, 0.0f);
 		velocity = Vector(0.0f, 0.0f);
 		angular_speed = 0.0f;
 	}
@@ -95,7 +93,7 @@ struct PlayerPlatform : public UnmovableObject {
 private:
 	const Vector &MoveTo(const Vector &pos) {
 		position = pos;
-		SetPosition(position, scale, angle);
+		SetPosition(position, angle);
 
 		for (size_t i = 0; i < segs.size(); ++i) {
 			Segment &seg = segs[i];

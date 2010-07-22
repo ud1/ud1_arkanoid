@@ -59,11 +59,30 @@ bool RenderData::Init() {
 	return true;
 }
 
-void RenderData::RenderUnmovableObject(const UnmovableObject &obj) {
+void RenderData::RenderUnmovableObjectsAndPlatform() {
 	glColor3f(1,1,1);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, elements_textureID);
 	glBegin(GL_TRIANGLES);
+	auto end_it = game->world.unmvbl_objs.end();
+	for (auto it = game->world.unmvbl_objs.begin(); it != end_it; ++it) {
+		const UnmovableObject &obj = **it;
+
+		for (size_t i = 0; i < obj.render_triangles.size(); ++i) {
+			const RenderTriangle &tri = obj.render_triangles[i];
+			glTexCoord2f(tri.vertexes[0].tex_coord.x / elements.width, tri.vertexes[0].tex_coord.y / elements.height);
+			glVertex2f(tri.vertexes[0].coord.x, tri.vertexes[0].coord.y);
+
+			glTexCoord2f(tri.vertexes[1].tex_coord.x / elements.width, tri.vertexes[1].tex_coord.y / elements.height);
+			glVertex2f(tri.vertexes[1].coord.x, tri.vertexes[1].coord.y);
+
+			glTexCoord2f(tri.vertexes[2].tex_coord.x / elements.width, tri.vertexes[2].tex_coord.y / elements.height);
+			glVertex2f(tri.vertexes[2].coord.x, tri.vertexes[2].coord.y);
+		}
+	}
+
+	const UnmovableObject &obj = game->world.player_platform;
+
 	for (size_t i = 0; i < obj.render_triangles.size(); ++i) {
 		const RenderTriangle &tri = obj.render_triangles[i];
 		glTexCoord2f(tri.vertexes[0].tex_coord.x / elements.width, tri.vertexes[0].tex_coord.y / elements.height);
@@ -75,6 +94,7 @@ void RenderData::RenderUnmovableObject(const UnmovableObject &obj) {
 		glTexCoord2f(tri.vertexes[2].tex_coord.x / elements.width, tri.vertexes[2].tex_coord.y / elements.height);
 		glVertex2f(tri.vertexes[2].coord.x, tri.vertexes[2].coord.y);
 	}
+	
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -160,9 +180,7 @@ void RenderData::RenderField() {
 
 	StartRenderField(game->GetFieldLogicSize());
 
-	for (auto it = game->world.unmvbl_objs.begin(); it != game->world.unmvbl_objs.end(); ++it) {
-		RenderUnmovableObject(**it);
-	}
+	RenderUnmovableObjectsAndPlatform();
 
 	for (size_t i = 0; i < game->world.bonuses.size(); ++i) {
 		RenderBonus(game->world.bonuses[i]);
@@ -171,8 +189,6 @@ void RenderData::RenderField() {
 	for (size_t i = 0; i < game->world.balls.size(); ++i) {
 		RenderBall(game->world.balls[i]);
 	}
-
-	RenderUnmovableObject(game->world.player_platform);
 }
 
 void RenderData::RenderStatsPanel() {

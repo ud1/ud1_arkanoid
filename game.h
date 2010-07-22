@@ -38,6 +38,7 @@ struct Game {
 		dark_period = 0.5;
 		max_darkness = 0.7;
 		platform_bonus = gravity_bonus = time_bonus = 0;
+		reserve_balls = 0;
 	}
 
 	Vector GetFieldLogicSize() const {
@@ -61,7 +62,7 @@ struct Game {
 		window->MoveCursorTo(window->ToWindowCoords(world.player_platform.GetTarget(), field_logical_size));
 	}
 
-	void InitializeField();
+	void InitializeField(float walls_velocity_loss, float surf_friction_koef_wall);
 	void ResetPlatform();
 	void ResetBall();
 	void SetupBall();

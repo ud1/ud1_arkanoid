@@ -25,7 +25,7 @@ void Game::Pause() {
 	}
 }
 
-void Game::InitializeField() {
+void Game::InitializeField(float walls_velocity_loss, float surf_friction_koef_wall) {
 	float logic_width = form_config.field.logic_width;
 	float logic_height = form_config.field.logic_height;
 	Wall wall;
@@ -35,6 +35,8 @@ void Game::InitializeField() {
 	wall.angular_velocity = 0.0f;
 	wall.length = logic_width;
 	wall.velocity = Vector(0.0f, 0.0f);
+	wall.velocity_loss = walls_velocity_loss;
+	wall.surf_friction_koef = surf_friction_koef_wall;
 	world.walls.push_back(wall);*/
 
 	// right wall
@@ -43,6 +45,8 @@ void Game::InitializeField() {
 	wall.angular_velocity = 0.0f;
 	wall.length = logic_height;
 	wall.velocity = Vector(0.0f, 0.0f);
+	wall.velocity_loss = walls_velocity_loss;
+	wall.surf_friction_koef = surf_friction_koef_wall;
 	world.walls.push_back(wall);
 
 	// left wall
@@ -51,6 +55,8 @@ void Game::InitializeField() {
 	wall.angular_velocity = 0.0f;
 	wall.length = logic_height;
 	wall.velocity = Vector(0.0f, 0.0f);
+	wall.velocity_loss = walls_velocity_loss;
+	wall.surf_friction_koef = surf_friction_koef_wall;
 	world.walls.push_back(wall);
 
 	// top wall
@@ -59,6 +65,8 @@ void Game::InitializeField() {
 	wall.angular_velocity = 0.0f;
 	wall.length = logic_width;
 	wall.velocity = Vector(0.0f, 0.0f);
+	wall.velocity_loss = walls_velocity_loss;
+	wall.surf_friction_koef = surf_friction_koef_wall;
 	world.walls.push_back(wall);
 }
 
@@ -151,6 +159,8 @@ void Game::ResetPlatform() {
 	world.player_platform.SetScale(level_conf.platform_scale);
 	world.player_platform.SetArea(Vector(0.0f, 0.0f), Vector(logic_width, logic_height/5.0f));
 	world.player_platform.InitPosition(Vector(logic_width/2.0f, 0.0f));
+	world.player_platform.velocity_loss = level_conf.velocity_loss_platform;
+	world.player_platform.surf_friction_koef = level_conf.surf_friction_koef_platform;
 	SetupCursor();
 }
 
@@ -236,11 +246,11 @@ void Game::ActivateBonus(const Bonus &bonus) {
 
 void Game::LoadLevel(const Level &l) {
 	world.Clear();
-	InitializeField();
-	ResetBonuses();
+	InitializeField(l.velocity_loss_wall, l.surf_friction_koef_wall);
 	ResetPlatform();
+	ResetBonuses();
 	ResetBall();
-	reserve_balls = l.reserve_balls_number;
+	reserve_balls += l.reserve_balls_number;
 
 	for (size_t i = 0; i < l.bricks.size(); ++i) {
 		const Level::brick_info &info = l.bricks[i];
