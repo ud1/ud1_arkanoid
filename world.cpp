@@ -32,6 +32,7 @@ void CollideBallToPhysObj(Ball &ball, PhysObj &obj, float delta_t) {
 
 	ball.Collide();
 	obj.Collide();
+	ball.pos_updated = true;
 }
 
 void CollideBallToBall(Ball &b1, Ball &b2, float delta_t) {
@@ -153,9 +154,11 @@ bool World::TryToSimulate(float delta_t) {
 				CollideBallToBall(ball, balls[j], delta_t);
 		}
 
+		static int s = 0;
+		++s;
+
 		if (BallToPhysObjNewCollided(ball, player_platform, delta_t))
 			CollideBallToPhysObj(ball, player_platform, delta_t);
-
 
 		if (!ball.pos_updated) {
 			ball.Move(delta_t);

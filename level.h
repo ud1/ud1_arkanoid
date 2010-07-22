@@ -15,7 +15,13 @@ struct Level {
 		std::string type;
 	};
 
+	struct ball_info {
+		Vector position;
+		Vector velocity;
+	};
+
 	std::vector<brick_info> bricks;
+	std::vector<ball_info> balls;
 	int reserve_balls_number;
 	Vector platform_scale;
 	Vector short_platform_scale;

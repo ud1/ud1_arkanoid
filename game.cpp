@@ -273,6 +273,11 @@ void Game::LoadLevel(const Level &l) {
 				world.AddActiveBlock(brick);
 		}
 	}
+
+	for (size_t i = 0; i < l.balls.size(); ++i) {
+		const Level::ball_info &info = l.balls[i];
+		NewBall(info.position, info.velocity);
+	}
 }
 
 void Game::DoPause() {

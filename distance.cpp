@@ -202,14 +202,18 @@ bool BallToPhysObjCollided(const Ball &b, const UnmovableObject &obj) {
 		return false;
 
 	const std::vector<Segment> &segs = obj.GetSegments();
-	assert(segs.size() > 0);
-	for (size_t i = 0; i < segs.size(); ++i) {
+	size_t segs_size = segs.size();
+	assert(segs_size > 0);
+	bool inside = true;
+	for (size_t i = 0; i < segs_size; ++i) {
 		float dst = DistanceLight(b.position, segs[i]);
-		if (dst > b.rad)
-			return false;
+		if (dst > 0 && dst < b.rad)
+			return true;
+		if (dst > 0)
+			inside = false;
 	}
 
-	return true;
+	return inside;
 }
 
 template<>
@@ -241,9 +245,8 @@ bool BallToPhysObjCollided(const Ball &b, const PlayerPlatform &obj) {
 template<>
 DistanceInfo BallToPhysObjNewDistance(const Ball &b, const PlayerPlatform &obj, float delta_t) {
 	Ball tmp_ball;
-	tmp_ball.position = b.position;
-	tmp_ball.velocity = b.velocity;
-	tmp_ball.rad = b.rad;
+	tmp_ball = b;
+	tmp_ball.Move(delta_t);
 
 	static PlayerPlatform tmp_platform;
 	tmp_platform.LightCopy(obj);
@@ -255,9 +258,8 @@ DistanceInfo BallToPhysObjNewDistance(const Ball &b, const PlayerPlatform &obj, 
 template<>
 bool BallToPhysObjNewCollided(const Ball &b, const PlayerPlatform &obj, float delta_t) {
 	Ball tmp_ball;
-	tmp_ball.position = b.position;
-	tmp_ball.velocity = b.velocity;
-	tmp_ball.rad = b.rad;
+	tmp_ball = b;
+	tmp_ball.Move(delta_t);
 
 	static PlayerPlatform tmp_platform;
 	tmp_platform.LightCopy(obj);

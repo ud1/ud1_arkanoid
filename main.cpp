@@ -19,9 +19,7 @@ void lbdown(int x, int y) {
 }
 
 void lbup(int x, int y) {
-	if (game.GetState() == Game::SIMULATION) {
-		game.world.player_platform.SetNoVelocityLoss(false);
-	}
+	game.world.player_platform.SetNoVelocityLoss(false);
 }
 
 void on_deactivate() {
