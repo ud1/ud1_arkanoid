@@ -6,7 +6,7 @@ struct Score {
 	}
 
 	void Reset() {
-		score = 0;
+		score = 0.0f;
 		speed_bonus = 1.0f;
 		platform_bonus = 1.0f;
 		gravity_bonus = 1.0f;

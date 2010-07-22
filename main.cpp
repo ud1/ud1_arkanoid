@@ -51,6 +51,12 @@ void key_up(int key) {
 			game.ThrowBall();
 		}
 	}
+
+	if (game.GetState() == Game::FINAL) {
+		if (key == KEY_RETURN || key == KEY_SPACE) {
+			game.RestartGame();
+		}
+	}
 }
 
 void mmove(int x, int y) {

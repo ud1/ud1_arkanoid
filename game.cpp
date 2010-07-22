@@ -299,8 +299,9 @@ void Game::DoSimulation() {
 	if (state_switch) {
 		state_switch = false;
 		timer.ResetGlobalTime(global_time);
+		prev_global_time = global_time;
 		MoveCursorToCenter();
-		mouse.Set(world.player_platform.GetTarget()*field_to_window_scale);
+		mouse.AbsSet(world.player_platform.GetTarget()*field_to_window_scale);
 	}
 
 	double delta_t = timer.GlobalTime() - prev_global_time;
@@ -437,6 +438,16 @@ void Game::DoFinal() {
 	wid = render_data.big_chars.GetWidth() * oss.str().size();
 	pos = Vector((form_config.window.width - wid) / 2.0f, (1.5f*form_config.window.height - heig) / 2.0f);
 	render_data.PrintTextBig(oss.str(), pos, RenderData::Color(1.0f, 1.0f, 0.0f));
+
+	if (restart_game) {
+		restart_game = false;
+		level = 0;
+		reserve_balls = 0;
+		score.Reset();
+		state = NEW_LEVEL;
+		state_switch = true;
+		ShowCursor(FALSE);
+	}
 }
 
 void Game::Render() {

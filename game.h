@@ -43,6 +43,7 @@ struct Game {
 		max_darkness = 0.7;
 		platform_bonus = gravity_bonus = time_bonus = 0;
 		reserve_balls = 0;
+		restart_game = false;
 	}
 
 	Vector GetFieldLogicSize() const {
@@ -80,12 +81,17 @@ struct Game {
 		world.SimulateUntil((float) t);
 	}
 
+	void RestartGame() {
+		restart_game = true;
+	}
+
 	void Run();
 	void LoadLevel(const Level &l);
 
 	bool isRunning;
 	int level;
 protected:
+	bool restart_game;
 	State prev_state; // Saved by Pause()
 	int reserve_balls;
 	
