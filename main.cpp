@@ -12,9 +12,17 @@ void close_main_window() {
 	game.isRunning = false;
 }
 
-void lbdown(int x, int y) {}
+void lbdown(int x, int y) {
+	if (game.GetState() == Game::SIMULATION) {
+		game.world.player_platform.SetNoVelocityLoss(true);
+	}
+}
 
-void lbup(int x, int y) {}
+void lbup(int x, int y) {
+	if (game.GetState() == Game::SIMULATION) {
+		game.world.player_platform.SetNoVelocityLoss(false);
+	}
+}
 
 void on_deactivate() {
 	if (game.GetState() != Game::PAUSE)
@@ -22,38 +30,39 @@ void on_deactivate() {
 }
 
 void key_down(int key) {
-	float angle = 0.2f;
-	if (key == KEY_KEY_D) {
-		game.world.player_platform.SetAngle(-angle);
-	} else if (key == KEY_KEY_A) {
-		game.world.player_platform.SetAngle(angle);
+	if (game.GetState() == Game::SIMULATION) {
+		float angle = 0.2f;
+		if (key == KEY_KEY_D) {
+			game.world.player_platform.SetAngle(-angle);
+		} else if (key == KEY_KEY_A) {
+			game.world.player_platform.SetAngle(angle);
+		}
 	}
 }
 
 void key_up(int key) {
 	if (key == KEY_ESCAPE) {
 		game.Pause();
-	} else if (key == KEY_KEY_A || key == KEY_KEY_D) {
-		game.world.player_platform.SetAngle(0.0f);
-	} else if (key == KEY_KEY_R) {
-		game.ThrowBall();
+	}
+	if (game.GetState() == Game::SIMULATION) {
+		if (key == KEY_KEY_A || key == KEY_KEY_D) {
+			game.world.player_platform.SetAngle(0.0f);
+		} else if (key == KEY_KEY_R) {
+			game.ThrowBall();
+		}
 	}
 }
 
 void mmove(int x, int y) {
-	static int old_x = 0;
-	static int old_y = 0;
-	if (x == old_x && y == old_y)
+	int dx = x - game.window->width/2;
+	int dy = y - game.window->height/2;
+	if (dx == 0 && dy == 0)
 		return;
-	old_x = x;
-	old_y = y;
 
 	if (game.GetState() == Game::SIMULATION) {
-		Vector field_logical_size(game.form_config.field.logic_width, game.form_config.field.logic_height);
-		game.world.player_platform.SetTarget(game.window->ToFieldCoords(Vector((float) x, (float) y), field_logical_size));
-		game.SetupCursor();
+		game.mouse.SetDeltaPos((float) dx, (float) -dy);
+		game.MoveCursorToCenter();
 	}
-
 }
 
 void on_char(char ch) {}

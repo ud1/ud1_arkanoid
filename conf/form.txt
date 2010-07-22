@@ -12,3 +12,6 @@ score_position 612 74 787 109
 
 // level_position left top right bottom
 level_position 730 542 766 570
+
+// mouse_smoothing seconds
+mouse_smoothing 0.07

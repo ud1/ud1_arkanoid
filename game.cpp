@@ -76,6 +76,16 @@ bool Game::Initialize() {
 		return false;
 	}
 
+	mouse.SetTau(form_config.mouse_smoothing);
+
+	field_to_window_scale = Vector(
+		form_config.window.width/form_config.field.logic_width,
+		form_config.window.height/form_config.field.logic_height);
+
+	window_to_field_scale = Vector(
+		form_config.field.logic_width/form_config.window.width,
+		form_config.field.logic_height/form_config.window.height);
+
 	if (!platform_proto.LoadFromFile("conf/platform.txt")) {
 		std::cerr << "Invalid conf/platform.txt\n";
 		return false;
@@ -159,9 +169,9 @@ void Game::ResetPlatform() {
 	world.player_platform.SetScale(level_conf.platform_scale);
 	world.player_platform.SetArea(Vector(0.0f, 0.0f), Vector(logic_width, logic_height/5.0f));
 	world.player_platform.InitPosition(Vector(logic_width/2.0f, 0.0f));
-	world.player_platform.velocity_loss = level_conf.velocity_loss_platform;
+	world.player_platform.SetVelocityLoss(level_conf.velocity_loss_platform);
 	world.player_platform.surf_friction_koef = level_conf.surf_friction_koef_platform;
-	SetupCursor();
+	mouse.AbsSet(world.player_platform.GetTarget()*field_to_window_scale);
 }
 
 void Game::ResetBall() {
@@ -289,15 +299,21 @@ void Game::DoSimulation() {
 	if (state_switch) {
 		state_switch = false;
 		timer.ResetGlobalTime(global_time);
-		SetupCursor();
+		MoveCursorToCenter();
+		mouse.Set(world.player_platform.GetTarget()*field_to_window_scale);
 	}
 
 	double delta_t = timer.GlobalTime() - prev_global_time;
-	if (delta_t > 0.1)
+	if (delta_t > 0.1) {
 		timer.ResetGlobalTime(prev_global_time + 0.1);
+		delta_t = 0.1;
+	}
 	prev_global_time = timer.GlobalTime();
 
-	SetupCursor();
+	mouse.Update((float) delta_t);
+
+	world.player_platform.SetTarget(mouse.Get()*window_to_field_scale);
+	mouse.Set(world.player_platform.GetTarget()*field_to_window_scale);
 
 	SumulateWorld();
 

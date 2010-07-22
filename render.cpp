@@ -291,6 +291,8 @@ void RenderData::PrintText(const std::string &text, const CharsInfo &info, Vecto
 	glColor3f(color.r, color.g, color.b);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, elements_textureID);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
 
 	float rect_w = info.GetWidth();
 	glBegin(GL_QUADS);
@@ -318,5 +320,6 @@ void RenderData::PrintText(const std::string &text, const CharsInfo &info, Vecto
 		pos.x += rect_w;
 	}
 	glEnd();
+	glDisable(GL_BLEND);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

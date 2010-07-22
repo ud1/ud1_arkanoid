@@ -90,6 +90,16 @@ struct PlayerPlatform : public UnmovableObject {
 	void SetAngle(float angle_) {
 		angle_target = angle_;
 	}
+
+	void SetNoVelocityLoss(bool b) {
+		if (b)
+			velocity_loss = 0.0f;
+		else velocity_loss = velocity_loss_saved;
+	}
+
+	void SetVelocityLoss(float v) {
+		velocity_loss = velocity_loss_saved = v;
+	}
 private:
 	const Vector &MoveTo(const Vector &pos) {
 		position = pos;
@@ -106,4 +116,5 @@ private:
 	Vector target;
 	double prev_t;
 	float angle, angle_target, angular_speed;
+	float velocity_loss_saved;
 };

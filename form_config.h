@@ -24,5 +24,7 @@ struct FormConfig {
 		int left, top, right, bottom;
 	} level_position;
 
+	float mouse_smoothing;
+
 	bool LoadFromFile(const char *filename);
 };

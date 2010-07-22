@@ -95,15 +95,16 @@ bool World::TryToSimulate(float delta_t) {
 	// Check for collisions
 	if (delta_t > min_delta_t) {
 		for (size_t i = 0; i < balls_size; ++i) {
+			Ball tmp_ball;
+			tmp_ball = balls[i];
+			tmp_ball.Move(delta_t);
+
 			for (size_t j = 0; j < walls.size(); ++j) {
-				if (BallToPhysObjNewCollided(balls[i], walls[j], delta_t))
+				if (BallToPhysObjCollided(tmp_ball, walls[j]))
 					return false;
 			}
-		}
-
-		for (size_t i = 0; i < balls_size; ++i) {
 			for (auto it = unmvbl_objs.begin(); it != unmvbl_objs.end(); ++it) {
-				if (BallToPhysObjNewCollided(balls[i], **it, delta_t))
+				if (BallToPhysObjCollided(tmp_ball, **it))
 					return false;
 			}
 		}
@@ -133,14 +134,17 @@ bool World::TryToSimulate(float delta_t) {
 
 	for (size_t i = 0; i < balls_size; ++i) {
 		Ball &ball = balls[i];
+		Ball tmp_ball;
+		tmp_ball = ball;
+		tmp_ball.Move(delta_t);
 
 		for (size_t j = 0; j < walls.size(); ++j) {
-			if (BallToPhysObjNewCollided(ball, walls[j], delta_t))
+			if (BallToPhysObjCollided(tmp_ball, walls[j]))
 				CollideBallToPhysObj(ball, walls[j], delta_t);
 		}
 
 		for (auto it = unmvbl_objs.begin(); it != unmvbl_objs.end(); ++it) {
-			if (BallToPhysObjNewCollided(ball, **it, delta_t))
+			if (BallToPhysObjCollided(tmp_ball, **it))
 				CollideBallToPhysObj(ball, **it, delta_t);
 		}
 

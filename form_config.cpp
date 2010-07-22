@@ -23,6 +23,8 @@ FormConfig::FormConfig() {
 	score_position.top = 74;
 	score_position.right = 787;
 	score_position.bottom = 109;
+
+	mouse_smoothing = 0.07f;
 }
 
 bool FormConfig::LoadFromFile(const char *filename) {
@@ -57,6 +59,8 @@ bool FormConfig::LoadFromFile(const char *filename) {
 		} else if (cmd == "level_position") {
 			if ((iss >> level_position.left >> level_position.top >> level_position.right >> level_position.bottom).fail())
 				return false;
+		} else if (cmd == "mouse_smoothing") {
+			iss >> mouse_smoothing;
 		}
 	}
 	return true;

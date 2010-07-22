@@ -11,22 +11,10 @@ struct Window {
 	int width, height;
 	int real_width, real_height;
 
-	Vector ToFieldCoords(const Vector &window_coords, const Vector &field_log_size) const {
-		return Vector(
-			window_coords.x * field_log_size.x / width,
-			(height - window_coords.y) * field_log_size.y / height);
-	}
-
-	Vector ToWindowCoords(const Vector &fieldcoords, const Vector &field_log_size) const {
-		return Vector(
-			fieldcoords.x * width / field_log_size.x,
-			height - fieldcoords.y * height / field_log_size.y);
-	}
-
-	void MoveCursorTo(const Vector &window_coords) const {
+	void MoveCursorTo(int x, int y) const {
 		POINT p;
-		p.x = (LONG) window_coords.x;
-		p.y = (LONG) window_coords.y;
+		p.x = (LONG) x;
+		p.y = (LONG) y;
 		ClientToScreen(hwnd, &p);
 		SetCursorPos(p.x, p.y);
 	}

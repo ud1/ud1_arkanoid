@@ -9,6 +9,7 @@
 #include "object_prototype.h"
 #include "bonus.h"
 #include "bonus_info.h"
+#include "mouse.h"
 
 struct Game {
 	FormConfig form_config;
@@ -19,6 +20,9 @@ struct Game {
 	Score score;
 	Window *window;
 	BonusInfo bonus_info;
+	Mouse mouse;
+	Vector field_to_window_scale;
+	Vector window_to_field_scale;
 
 	enum State {
 		PAUSE,
@@ -57,9 +61,8 @@ struct Game {
 		return level;
 	}
 
-	void SetupCursor() {
-		Vector field_logical_size(form_config.field.logic_width, form_config.field.logic_height);
-		window->MoveCursorTo(window->ToWindowCoords(world.player_platform.GetTarget(), field_logical_size));
+	void MoveCursorToCenter() {
+		window->MoveCursorTo(window->width/2, window->height/2);
 	}
 
 	void InitializeField(float walls_velocity_loss, float surf_friction_koef_wall);
