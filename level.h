@@ -5,6 +5,7 @@
 #include <string>
 
 struct Level {
+	Level();
 	struct brick_info {
 		Vector scale, pos;
 		float angle;

@@ -3,6 +3,26 @@
 #include <fstream>
 #include <sstream>
 
+Level::Level() {
+	reserve_balls_number = 5;
+	
+	platform_scale = Vector(1.5f, 0.3f);
+	short_platform_scale = Vector(0.75f, 0.2f);
+	long_platform_scale = Vector(3.0f, 0.5f);
+
+	gravity = Vector(0.0f, -7.0f);
+	gravity_left = Vector(-3.0f, -7.0f);
+	gravity_right = Vector(3.0f, 7.0f);
+
+	platform_bonus_time = gravity_bonus_time = time_bonus_time = 2.0;
+
+	velocity_loss_wall = 0.05f;
+	velocity_loss_platform = 0.2f;
+
+	surf_friction_koef_wall = 0.05f;
+	surf_friction_koef_platform = 0.15f;
+}
+
 bool Level::LoadFromFile(const char *filename) {
 	bricks.clear();
 	std::ifstream file(filename);
