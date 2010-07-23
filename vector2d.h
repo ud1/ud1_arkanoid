@@ -91,4 +91,16 @@ struct Vector {
 	bool operator != (const Vector &o) const {
 		return (x != o.x || y != o.y);
 	}
+
+	Vector &operator += (const Vector &o) {
+		x += o.x;
+		y += o.y;
+		return *this;
+	}
+
+	Vector &operator -= (const Vector &o) {
+		x -= o.x;
+		y -= o.y;
+		return *this;
+	}
 };

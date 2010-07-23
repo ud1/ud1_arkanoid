@@ -130,4 +130,6 @@ protected:
 	Vector GetGravity() const;
 	void SetupBonuses();
 	void ResetBonuses();
+
+	void UpdateMouse();
 };

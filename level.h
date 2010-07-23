@@ -1,6 +1,8 @@
 #pragma once
 
 #include "vector2d.h"
+#include "mover.h"
+
 #include <vector>
 #include <string>
 
@@ -13,6 +15,7 @@ struct Level {
 		int life, points, bonus;
 		bool is_static;
 		std::string type;
+		Mover mover;
 	};
 
 	struct ball_info {

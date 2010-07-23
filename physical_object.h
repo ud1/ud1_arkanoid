@@ -14,8 +14,11 @@ struct PhysicalObject {
 	}
 
 	void InitPosition(Vector pos, float angle_) {
-		position = render_position = test_position = pos;
-		angle = render_angle = test_angle = angle_;
+		start_position = pos;
+		start_angle = angle_;
+		position = render_position = test_position = start_position + mover.GetPositionDelta(0.0f);
+		angle = render_angle = test_angle = start_angle + mover.GetAngleDelta(0.0f);
+
 		velocity = Vector(0.0f, 0.0f);
 		angular_velocity = 0.0f;
 		collision_object.SetPosition(position, angle, velocity, angular_velocity);
@@ -28,7 +31,7 @@ struct PhysicalObject {
 	}
 
 	void CalculateVelocity(float abs_t, float delta_t) {
-		SetTarget(position + mover.GetPositionDelta(abs_t), angle + mover.GetAngleDelta(abs_t), delta_t);
+		SetTarget(start_position + mover.GetPositionDelta(abs_t), start_angle + mover.GetAngleDelta(abs_t), delta_t);
 	}
 
 	void TestMove(float delta_t) {
@@ -98,6 +101,9 @@ protected:
 
 	Vector render_position;
 	float render_angle;
+
+	Vector start_position;
+	float start_angle;
 
 	Vector scale;
 };

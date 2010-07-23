@@ -8,6 +8,7 @@ GameBrick::GameBrick(Game *game_) {
 
 void GameBrick::Initialize(const Level::brick_info &info, const ObjectPrototype *proto) {
 	SetPrototype(*proto, info.scale);
+	mover = info.mover;
 	InitPosition(info.pos, info.angle);
 	life = info.life;
 	game_points = info.points;

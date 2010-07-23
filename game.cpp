@@ -30,14 +30,14 @@ void Game::InitializeField(float walls_velocity_loss, float surf_friction_coef_w
 	float logic_height = form_config.field.logic_height;
 	Wall wall;
 	// bottom
-	wall.p1 = Vector(0.0f, 0.0f);
+	/*wall.p1 = Vector(0.0f, 0.0f);
 	wall.angle = 0.0f;
 	wall.angular_velocity = 0.0f;
 	wall.length = logic_width;
 	wall.velocity = Vector(0.0f, 0.0f);
 	wall.velocity_loss = walls_velocity_loss;
 	wall.surf_friction_coef = surf_friction_coef_wall;
-	world.walls.push_back(wall);
+	world.walls.push_back(wall);*/
 
 	// right wall
 	wall.p1 = Vector(logic_width, 0.0f);
@@ -183,7 +183,6 @@ void Game::SetupBall() {
 	ball.velocity = Vector(0.0f, 0.0f);
 	ball.position = Vector(form_config.field.logic_width/2.0f, 2.0f);
 	ball.rad = 0.1f;
-	ball.rotation_speed = 0.5f;
 	world.balls.push_back(ball);
 }
 
@@ -299,6 +298,14 @@ void Game::DoPause() {
 	render_data.PrintTextBig(str, pos, RenderData::Color(1.0f, 1.0f, 0.0f));
 }
 
+void Game::UpdateMouse() {
+	static double game_timer_prev_time = 0.0;
+	double t = game_timer.GlobalTime();
+	double dt = t - game_timer_prev_time;
+	game_timer_prev_time = t;
+	mouse.Update((float) dt);
+}
+
 void Game::DoSimulation() {
 	if (state_switch) {
 		state_switch = false;
@@ -315,7 +322,7 @@ void Game::DoSimulation() {
 	}
 	prev_global_time = timer.GlobalTime();
 
-	mouse.Update((float) delta_t);
+	UpdateMouse();
 
 	world.player_platform.SetTarget(mouse.Get()*window_to_field_scale);
 	mouse.Set(world.player_platform.GetTarget()*field_to_window_scale);

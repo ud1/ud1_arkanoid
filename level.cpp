@@ -52,6 +52,30 @@ bool Level::LoadFromFile(const char *filename) {
 				info.angle *= (float) M_PI / 180.0f;
 				bricks.push_back(info);
 			}
+		} else if (cmd == "pos_lin") {
+			if (bricks.size()) {
+				Level::brick_info &info = bricks[bricks.size() - 1];
+				Mover::pos_lin p_lin;
+				if (iss >> p_lin) {
+					info.mover.pos_lin_funcs.push_back(p_lin);
+				}
+			}
+		} else if (cmd == "pos_sine") {
+			if (bricks.size()) {
+				Level::brick_info &info = bricks[bricks.size() - 1];
+				Mover::pos_sine p_sine;
+				if (iss >> p_sine) {
+					info.mover.pos_sine_funcs.push_back(p_sine);
+				}
+			}
+		} else if (cmd == "angle_lin") {
+			if (bricks.size()) {
+				Level::brick_info &info = bricks[bricks.size() - 1];
+				Mover::angle_lin a_lin;
+				if (iss >> a_lin) {
+					info.mover.angle_lin_funcs.push_back(a_lin);
+				}
+			}
 		} else if (cmd == "ball") {
 			ball_info info;
 			if (!(iss >> info.position >> info.velocity).fail()) {
