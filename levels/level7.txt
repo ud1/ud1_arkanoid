@@ -28,13 +28,13 @@ velocity_loss_wall 0.05
 // velocity_loss_platform value
 velocity_loss_platform 0.2
 
-// surf_friction_koef_wall value
-surf_friction_koef_wall 0.05
+// surf_friction_coef_wall value
+surf_friction_coef_wall 0.05
 
-// surf_friction_koef_platform value
-surf_friction_koef_platform 0.15
+// surf_friction_coef_platform value
+surf_friction_coef_platform 0.15
 
-// brick brick1_type life velocity_loss surf_friction_koef scale_x scale_y pos_x pos_y angle_in_degrees points is_static bonus
+// brick brick1_type life velocity_loss surf_friction_coef scale_x scale_y pos_x pos_y angle_in_degrees points is_static bonus
 brick block2	1 0.05 0.05 2.5 0.3 5.0	7.5 90 20 1 0
 brick block2	1 0.05 0.05 2.5 0.3 5.0	5.0 90 20 1 0
 brick block1	1 0.05 0.05 0.5 0.5 5.0	3.0 0 20 1 0

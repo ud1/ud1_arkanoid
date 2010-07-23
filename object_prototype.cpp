@@ -22,7 +22,7 @@ bool ObjectPrototype::LoadFromFile(const char *filename) {
 		if (cmd == "seg") {
 			SegmentProto seg;
 			if (!(iss >> seg.p1.x >> seg.p1.y >> seg.p2.x >> seg.p2.y).fail()) {
-				segs.push_back(seg);
+				col_obj_proto.segs.push_back(seg);
 			}
 		} else if (cmd == "tri") {
 			RenderTriangle tri;
@@ -34,7 +34,7 @@ bool ObjectPrototype::LoadFromFile(const char *filename) {
 				>> tri.vertexes[2].coord.x >> tri.vertexes[2].coord.y 
 				>> tri.vertexes[2].tex_coord.x >> tri.vertexes[2].tex_coord.y).fail())
 			{
-				render_triangles.push_back(tri);
+				render_obj_proto.render_triangles.push_back(tri);
 			}
 		}
 	}

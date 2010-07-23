@@ -66,7 +66,7 @@ struct Game {
 		window->MoveCursorTo(window->width/2, window->height/2);
 	}
 
-	void InitializeField(float walls_velocity_loss, float surf_friction_koef_wall);
+	void InitializeField(float walls_velocity_loss, float surf_friction_coef_wall);
 	void ResetPlatform();
 	void ResetBall();
 	void SetupBall();

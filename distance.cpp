@@ -1,9 +1,14 @@
 #include "distance.h"
 #include "ball.h"
 #include "wall.h"
-#include "unmovable_object.h"
+#include "physical_object.h"
 #include "player_platform.h"
+#include "segment.h"
+
 #include <cassert>
+
+template <typename PhysObj>
+float BallToPhysObjDistanceLight(const Ball &b, const PhysObj &obj);
 
 DistanceInfo Distance(const Vector &point, const Vector &point_velocity, float rotation_speed, const Segment &s) {
 	DistanceInfo res;
@@ -84,32 +89,6 @@ bool BallToPhysObjCollided(const Ball &b, const Wall &w) {
 }
 
 template<>
-DistanceInfo BallToPhysObjNewDistance(const Ball &b, const Wall &w, float delta_t) {
-	Ball tmp_ball;
-	tmp_ball = b;
-	tmp_ball.Move(delta_t);
-	return BallToPhysObjDistance(tmp_ball, w);
-}
-
-template<>
-float BallToPhysObjNewDistanceLight(const Ball &b, const Wall &w, float delta_t) {
-	Ball tmp_ball;
-	tmp_ball = b;
-	tmp_ball.Move(delta_t);
-	return BallToPhysObjDistanceLight(tmp_ball, w);
-}
-
-template<>
-bool BallToPhysObjNewCollided(const Ball &b, const Wall &w, float delta_t) {
-	Ball tmp_ball;
-	tmp_ball = b;
-	tmp_ball.Move(delta_t);
-	return BallToPhysObjDistanceLight(tmp_ball, w) <= 0.0f;
-}
-
-
-
-template<>
 DistanceInfo BallToPhysObjDistance(const Ball &b1, const Ball &b2) {
 	DistanceInfo res;
 	Vector b2_b1 = b1.position - b2.position;
@@ -132,35 +111,8 @@ bool BallToPhysObjCollided(const Ball &b1, const Ball &b2) {
 }
 
 template<>
-DistanceInfo BallToPhysObjNewDistance(const Ball &b1, const Ball &b2, float delta_t) {
-	Ball tmp_ball1;
-	tmp_ball1 = b1;
-	tmp_ball1.Move(delta_t);
-
-	Ball tmp_ball2;
-	tmp_ball2 = b2;
-	tmp_ball2.Move(delta_t);
-	return BallToPhysObjDistance(tmp_ball1, tmp_ball2);
-}
-
-template<>
-bool BallToPhysObjNewCollided(const Ball &b1, const Ball &b2, float delta_t) {
-	Ball tmp_ball1;
-	tmp_ball1 = b1;
-	tmp_ball1.Move(delta_t);
-
-	Ball tmp_ball2;
-	tmp_ball2 = b2;
-	tmp_ball2.Move(delta_t);
-	return BallToPhysObjCollided(tmp_ball1, tmp_ball2);
-}
-
-
-
-
-template<>
-DistanceInfo BallToPhysObjDistance(const Ball &b, const UnmovableObject &obj) {
-	const std::vector<Segment> &segs = obj.GetSegments();
+DistanceInfo BallToPhysObjDistance(const Ball &b, const PhysicalObject &obj) {
+	const std::vector<Segment> &segs = obj.GetCollObject().GetSegments();
 	assert(segs.size() > 0);
 	DistanceInfo dst_min_positive, dst_max_negative;
 	bool has_positive_values = false;
@@ -195,13 +147,13 @@ DistanceInfo BallToPhysObjDistance(const Ball &b, const UnmovableObject &obj) {
 }
 
 template<>
-bool BallToPhysObjCollided(const Ball &b, const UnmovableObject &obj) {
+bool BallToPhysObjCollided(const Ball &b, const PhysicalObject &obj) {
 	float dist2 = (b.position - obj.GetPosition()).Length2();
-	float sum_rad = b.rad + obj.GetMaxRad();
+	float sum_rad = b.rad + obj.GetCollObject().GetBoundingRad();
 	if (dist2 > sum_rad*sum_rad)
 		return false;
 
-	const std::vector<Segment> &segs = obj.GetSegments();
+	const std::vector<Segment> &segs = obj.GetCollObject().GetSegments();
 	size_t segs_size = segs.size();
 	assert(segs_size > 0);
 	bool inside = true;
@@ -217,53 +169,11 @@ bool BallToPhysObjCollided(const Ball &b, const UnmovableObject &obj) {
 }
 
 template<>
-DistanceInfo BallToPhysObjNewDistance(const Ball &b, const UnmovableObject &obj, float delta_t) {
-	Ball tmp_ball;
-	tmp_ball = b;
-	tmp_ball.Move(delta_t);
-	return BallToPhysObjDistance(tmp_ball, obj);
-}
-
-template<>
-bool BallToPhysObjNewCollided(const Ball &b, const UnmovableObject &obj, float delta_t) {
-	Ball tmp_ball;
-	tmp_ball = b;
-	tmp_ball.Move(delta_t);
-	return BallToPhysObjCollided(tmp_ball, obj);
+bool BallToPhysObjCollided(const Ball &b, const PlayerPlatform &obj) {
+	return BallToPhysObjCollided(b, (const PhysicalObject &) obj);
 }
 
 template<>
 DistanceInfo BallToPhysObjDistance(const Ball &b, const PlayerPlatform &obj) {
-	return BallToPhysObjDistance(b, (const UnmovableObject &) obj);
-}
-
-template<>
-bool BallToPhysObjCollided(const Ball &b, const PlayerPlatform &obj) {
-	return BallToPhysObjCollided(b, (const UnmovableObject &) obj);
-}
-
-template<>
-DistanceInfo BallToPhysObjNewDistance(const Ball &b, const PlayerPlatform &obj, float delta_t) {
-	Ball tmp_ball;
-	tmp_ball = b;
-	tmp_ball.Move(delta_t);
-
-	static PlayerPlatform tmp_platform;
-	tmp_platform.LightCopy(obj);
-	tmp_platform.MoveCollData(delta_t);
-
-	return BallToPhysObjDistance(tmp_ball, tmp_platform);
-}
-
-template<>
-bool BallToPhysObjNewCollided(const Ball &b, const PlayerPlatform &obj, float delta_t) {
-	Ball tmp_ball;
-	tmp_ball = b;
-	tmp_ball.Move(delta_t);
-
-	static PlayerPlatform tmp_platform;
-	tmp_platform.LightCopy(obj);
-	tmp_platform.MoveCollData(delta_t);
-
-	return BallToPhysObjCollided(tmp_ball, tmp_platform);
+	return BallToPhysObjDistance(b, (const PhysicalObject &) obj);
 }

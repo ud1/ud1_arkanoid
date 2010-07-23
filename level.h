@@ -9,7 +9,7 @@ struct Level {
 	struct brick_info {
 		Vector scale, pos;
 		float angle;
-		float velocity_loss, surf_friction_koef;
+		float velocity_loss, surf_friction_coef;
 		int life, points, bonus;
 		bool is_static;
 		std::string type;
@@ -34,7 +34,7 @@ struct Level {
 	double platform_bonus_time, gravity_bonus_time, time_bonus_time;
 
 	float velocity_loss_wall, velocity_loss_platform;
-	float surf_friction_koef_wall, surf_friction_koef_platform;
+	float surf_friction_coef_wall, surf_friction_coef_platform;
 
 	bool LoadFromFile(const char *filename);
 };

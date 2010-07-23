@@ -31,9 +31,9 @@ void key_down(int key) {
 	if (game.GetState() == Game::SIMULATION) {
 		float angle = 0.2f;
 		if (key == KEY_KEY_D) {
-			game.world.player_platform.SetAngle(-angle);
+			game.world.player_platform.SetTargetAngle(-angle);
 		} else if (key == KEY_KEY_A) {
-			game.world.player_platform.SetAngle(angle);
+			game.world.player_platform.SetTargetAngle(angle);
 		}
 	}
 }
@@ -42,10 +42,13 @@ void key_up(int key) {
 	if (key == KEY_ESCAPE) {
 		game.Pause();
 	}
+
+	if (key == KEY_KEY_A || key == KEY_KEY_D) {
+		game.world.player_platform.SetTargetAngle(0.0f);
+	}
+
 	if (game.GetState() == Game::SIMULATION) {
-		if (key == KEY_KEY_A || key == KEY_KEY_D) {
-			game.world.player_platform.SetAngle(0.0f);
-		} else if (key == KEY_KEY_R) {
+		if (key == KEY_KEY_R) {
 			game.ThrowBall();
 		}
 	}

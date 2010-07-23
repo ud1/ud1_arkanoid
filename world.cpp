@@ -4,7 +4,7 @@ template<typename T>
 T Min(T a, T b) { return a < b ? a : b; }
 
 const float ball_inertia_moment = 0.4f;
-const float ball_to_ball_surf_friction_koef = 0.4f;
+const float ball_to_ball_surf_friction_coef = 0.4f;
 
 template<typename PhysObj>
 void CollideBallToPhysObj(Ball &ball, PhysObj &obj, float delta_t) {
@@ -15,9 +15,9 @@ void CollideBallToPhysObj(Ball &ball, PhysObj &obj, float delta_t) {
 	if (time_to_collide < 0.0f)
 		time_to_collide = 0.0f;
 	ball.Move(time_to_collide);
-	float vel_coef = 2.0f - obj.velocity_loss;
+	float vel_coef = 2.0f - obj.GetVelocityLoss();
 	ball.velocity = ball.velocity + dst.normal * (vel_coef*dst.velocity);
-	float delta_rot_speed = Min(std::abs(vel_coef*dst.velocity*obj.surf_friction_koef/ball_inertia_moment), std::abs(dst.rotation_speed));
+	float delta_rot_speed = Min(std::abs(vel_coef*dst.velocity*obj.GetSurfaceFrictionCoef()/ball_inertia_moment), std::abs(dst.rotation_speed));
 	if (dst.rotation_speed < 0.0f)
 		delta_rot_speed = -delta_rot_speed;
 	ball.rotation_speed += delta_rot_speed;
@@ -46,7 +46,7 @@ void CollideBallToBall(Ball &b1, Ball &b2, float delta_t) {
 	b2.Move(time_to_collide);
 	b1.velocity = b1.velocity + dst.normal * (dst.velocity);
 	b2.velocity = b2.velocity - dst.normal * (dst.velocity);
-	float delta_rot_speed = std::min(std::abs(dst.velocity*ball_to_ball_surf_friction_koef/ball_inertia_moment), std::abs(dst.rotation_speed/2.0f));
+	float delta_rot_speed = std::min(std::abs(dst.velocity*ball_to_ball_surf_friction_coef/ball_inertia_moment), std::abs(dst.rotation_speed/2.0f));
 	if (dst.rotation_speed < 0.0f)
 		delta_rot_speed = -delta_rot_speed;
 	b1.rotation_speed += delta_rot_speed;
@@ -76,7 +76,11 @@ const float max_delta_t = 1.0f/500.0f;
 void World::SimulateUntil(float t) {
 	if (t <= current_time)
 		return;
+	
 	player_platform.CalculateVelocity(t - current_time);
+	for (auto it = objects.begin(); it != objects.end(); ++it)
+		(*it)->CalculateVelocity(t, t - current_time);
+
 	size_t cnt = (size_t) ((t - current_time) / max_delta_t);
 	for (size_t i = 0; i < cnt; ++i) {
 		SimulateDelta(max_delta_t);
@@ -91,8 +95,44 @@ void World::SimulateUntil(float t) {
 	AddNewBalls();
 }
 
+void World::SimulateDelta(float delta_t) {
+	while (delta_t > 0.0f) {
+		float dt = delta_t;
+		while (!TryToSimulate(dt))
+			dt /= 2;
+
+		delta_t -= dt;
+	}
+}
+
+template <typename T>
+void TestMoveObj(T &t, float delta_t) {
+	if (t.pos_updated)
+		return;
+	t.TestMove(delta_t);
+	t.pos_updated = true;
+}
+
+template <typename T>
+void MoveObj(T &t, float delta_t) {
+	if (t.pos_updated) {
+		t.ApplyMove();
+		return;
+	}
+	t.Move(delta_t);
+	t.pos_updated = true;
+}
+
 bool World::TryToSimulate(float delta_t) {
 	size_t balls_size = balls.size();
+
+	player_platform.pos_updated = false;
+	for (size_t i = 0; i < balls_size; ++i) {
+		balls[i].pos_updated = false;
+	}
+	for (auto it = objects.begin(); it != objects.end(); ++it)
+		(*it)->pos_updated = false;
+
 	// Check for collisions
 	if (delta_t > min_delta_t) {
 		for (size_t i = 0; i < balls_size; ++i) {
@@ -100,83 +140,103 @@ bool World::TryToSimulate(float delta_t) {
 			tmp_ball = balls[i];
 			tmp_ball.Move(delta_t);
 
+			// Check collision to walls
 			for (size_t j = 0; j < walls.size(); ++j) {
 				if (BallToPhysObjCollided(tmp_ball, walls[j]))
 					return false;
 			}
-			for (auto it = unmvbl_objs.begin(); it != unmvbl_objs.end(); ++it) {
-				if (BallToPhysObjCollided(tmp_ball, **it))
+
+			// Check collision to objects
+			for (auto it = objects.begin(); it != objects.end(); ++it) {
+				PhysicalObject *obj = *it;
+				TestMoveObj(*obj, delta_t);
+				if (BallToPhysObjCollided(tmp_ball, *obj))
 					return false;
 			}
-		}
 
-		for (size_t i = 0; i < balls_size; ++i) {
-			if (BallToPhysObjNewCollided(balls[i], player_platform, delta_t))
+			// Check collision to player platform
+			TestMoveObj(player_platform, delta_t);
+			if (BallToPhysObjCollided(tmp_ball, player_platform))
 				return false;
-		}
 
-		for (size_t i = 0; i < balls_size; ++i) {
+			// Check collision to other balls
 			for (size_t j = i+1; j < balls_size; ++j) {
-				if (BallToPhysObjNewCollided(balls[i], balls[j], delta_t))
+				Ball tmp_ball2;
+				tmp_ball2 = balls[j];
+				tmp_ball2.Move(delta_t);
+				if (BallToPhysObjCollided(tmp_ball, tmp_ball2))
 					return false;
 			}
 		}
 
+		// Check collision the platform to bonuses
 		for (size_t i = 0; i < bonuses.size(); ++i) {
-			if (BallToPhysObjNewCollided((const Ball &)bonuses[i], player_platform, delta_t))
+			TestMoveObj(player_platform, delta_t);
+			Bonus tmp_bounus = bonuses[i];
+			tmp_bounus.Move(delta_t);
+			if (BallToPhysObjCollided(tmp_bounus, player_platform))
 				return false;
 		}
 	}
 
 	// Update positions
 	for (size_t i = 0; i < balls_size; ++i) {
-		balls[i].pos_updated = false;
-	}
-
-	for (size_t i = 0; i < balls_size; ++i) {
 		Ball &ball = balls[i];
 		Ball tmp_ball;
 		tmp_ball = ball;
 		tmp_ball.Move(delta_t);
 
+		// Check collision to walls
 		for (size_t j = 0; j < walls.size(); ++j) {
 			if (BallToPhysObjCollided(tmp_ball, walls[j]))
 				CollideBallToPhysObj(ball, walls[j], delta_t);
 		}
 
-		for (auto it = unmvbl_objs.begin(); it != unmvbl_objs.end(); ++it) {
-			if (BallToPhysObjCollided(tmp_ball, **it))
-				CollideBallToPhysObj(ball, **it, delta_t);
+		// Check collision to objects
+		for (auto it = objects.begin(); it != objects.end(); ++it) {
+			PhysicalObject *obj = *it;
+			TestMoveObj(*obj, delta_t);
+			if (BallToPhysObjCollided(tmp_ball, *obj))
+				CollideBallToPhysObj(ball, *obj, delta_t);
 		}
 
+		// Check collision to player platform
+		TestMoveObj(player_platform, delta_t);
+		if (BallToPhysObjCollided(tmp_ball, player_platform))
+			CollideBallToPhysObj(ball, player_platform, delta_t);
+
+		// Check collision to other balls
 		for (size_t j = i+1; j < balls_size; ++j) {
-			if (BallToPhysObjNewCollided(ball, balls[j], delta_t))
+			Ball tmp_ball2;
+			tmp_ball2 = balls[j];
+			tmp_ball2.Move(delta_t);
+			if (BallToPhysObjCollided(tmp_ball, tmp_ball2))
 				CollideBallToBall(ball, balls[j], delta_t);
 		}
-
-		static int s = 0;
-		++s;
-
-		if (BallToPhysObjNewCollided(ball, player_platform, delta_t))
-			CollideBallToPhysObj(ball, player_platform, delta_t);
 
 		if (!ball.pos_updated) {
 			ball.Move(delta_t);
 		}
 	}
 
+	// Check collision the platform to bonuses
+	TestMoveObj(player_platform, delta_t);
 	for (auto it = bonuses.begin(); it != bonuses.end();) {
 		Bonus &bonus = *it;
-		if (BallToPhysObjNewCollided((const Ball &)bonus, player_platform, delta_t)) {
+		bonus.Move(delta_t);
+		if (BallToPhysObjCollided(bonus, player_platform)) {
 			bonus.Collide();
 			it = bonuses.erase(it);
 		} else {
-			bonus.Move(delta_t);
 			++it;
 		}
 	}
 
-	player_platform.Move(delta_t);
+	// Move all what is not already moved
+	MoveObj(player_platform, delta_t);
+	for (auto it = objects.begin(); it != objects.end(); ++it) {
+		MoveObj(**it, delta_t);
+	}
 
 	return true;
 }

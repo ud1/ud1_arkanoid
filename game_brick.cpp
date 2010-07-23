@@ -7,14 +7,12 @@ GameBrick::GameBrick(Game *game_) {
 }
 
 void GameBrick::Initialize(const Level::brick_info &info, const ObjectPrototype *proto) {
-	SetPrototype(proto);
-	SetScale(info.scale);
-	SetPosition(info.pos, info.angle);
+	SetPrototype(*proto, info.scale);
+	InitPosition(info.pos, info.angle);
 	life = info.life;
 	game_points = info.points;
 	is_static = info.is_static;
-	velocity_loss = info.velocity_loss;
-	surf_friction_koef = info.surf_friction_koef;
+	SetSurfaceParams(info.velocity_loss, info.surf_friction_coef);
 	bonus = info.bonus;
 }
 

@@ -25,7 +25,7 @@ void Game::Pause() {
 	}
 }
 
-void Game::InitializeField(float walls_velocity_loss, float surf_friction_koef_wall) {
+void Game::InitializeField(float walls_velocity_loss, float surf_friction_coef_wall) {
 	float logic_width = form_config.field.logic_width;
 	float logic_height = form_config.field.logic_height;
 	Wall wall;
@@ -36,7 +36,7 @@ void Game::InitializeField(float walls_velocity_loss, float surf_friction_koef_w
 	wall.length = logic_width;
 	wall.velocity = Vector(0.0f, 0.0f);
 	wall.velocity_loss = walls_velocity_loss;
-	wall.surf_friction_koef = surf_friction_koef_wall;
+	wall.surf_friction_coef = surf_friction_coef_wall;
 	world.walls.push_back(wall);*/
 
 	// right wall
@@ -46,7 +46,7 @@ void Game::InitializeField(float walls_velocity_loss, float surf_friction_koef_w
 	wall.length = logic_height;
 	wall.velocity = Vector(0.0f, 0.0f);
 	wall.velocity_loss = walls_velocity_loss;
-	wall.surf_friction_koef = surf_friction_koef_wall;
+	wall.surf_friction_coef = surf_friction_coef_wall;
 	world.walls.push_back(wall);
 
 	// left wall
@@ -56,7 +56,7 @@ void Game::InitializeField(float walls_velocity_loss, float surf_friction_koef_w
 	wall.length = logic_height;
 	wall.velocity = Vector(0.0f, 0.0f);
 	wall.velocity_loss = walls_velocity_loss;
-	wall.surf_friction_koef = surf_friction_koef_wall;
+	wall.surf_friction_coef = surf_friction_coef_wall;
 	world.walls.push_back(wall);
 
 	// top wall
@@ -66,7 +66,7 @@ void Game::InitializeField(float walls_velocity_loss, float surf_friction_koef_w
 	wall.length = logic_width;
 	wall.velocity = Vector(0.0f, 0.0f);
 	wall.velocity_loss = walls_velocity_loss;
-	wall.surf_friction_koef = surf_friction_koef_wall;
+	wall.surf_friction_coef = surf_friction_coef_wall;
 	world.walls.push_back(wall);
 }
 
@@ -165,12 +165,10 @@ void Game::Run() {
 void Game::ResetPlatform() {
 	float logic_width = form_config.field.logic_width;
 	float logic_height = form_config.field.logic_height;
-	world.player_platform.SetPrototype(&platform_proto);
-	world.player_platform.SetScale(level_conf.platform_scale);
+	world.player_platform.SetPrototype(platform_proto, level_conf.platform_scale);
 	world.player_platform.SetArea(Vector(0.0f, 0.0f), Vector(logic_width, logic_height/5.0f));
 	world.player_platform.InitPosition(Vector(logic_width/2.0f, 0.0f));
-	world.player_platform.SetVelocityLoss(level_conf.velocity_loss_platform);
-	world.player_platform.surf_friction_koef = level_conf.surf_friction_koef_platform;
+	world.player_platform.SetSurfaceParams(level_conf.velocity_loss_platform, level_conf.surf_friction_coef_platform);
 	mouse.AbsSet(world.player_platform.GetTarget()*field_to_window_scale);
 }
 
@@ -215,14 +213,14 @@ void Game::ActivateBonus(const Bonus &bonus) {
 	case BONUS_LONG_PLATFORM:
 		platform_bonus = BONUS_LONG_PLATFORM;
 		platform_bonus_untill = timer.GlobalTime() + level_conf.platform_bonus_time;
-		world.player_platform.SetScale(level_conf.long_platform_scale);
+		world.player_platform.SetPrototype(platform_proto, level_conf.long_platform_scale);
 		world.player_platform.InitPosition(world.player_platform.GetPosition());
 		score.platform_bonus = 0.5f;
 		break;
 	case BONUS_SHORT_PLATFORM:
 		platform_bonus = BONUS_SHORT_PLATFORM;
 		platform_bonus_untill = timer.GlobalTime() + level_conf.platform_bonus_time;
-		world.player_platform.SetScale(level_conf.short_platform_scale);
+		world.player_platform.SetPrototype(platform_proto, level_conf.short_platform_scale);
 		world.player_platform.InitPosition(world.player_platform.GetPosition());
 		score.platform_bonus = 2.0f;
 		break;
@@ -256,7 +254,7 @@ void Game::ActivateBonus(const Bonus &bonus) {
 
 void Game::LoadLevel(const Level &l) {
 	world.Clear();
-	InitializeField(l.velocity_loss_wall, l.surf_friction_koef_wall);
+	InitializeField(l.velocity_loss_wall, l.surf_friction_coef_wall);
 	ResetPlatform();
 	ResetBonuses();
 	ResetBall();
@@ -491,7 +489,7 @@ void Game::SetupBonuses() {
 	double t = timer.GlobalTime();
 	if (platform_bonus && platform_bonus_untill < t) {
 		platform_bonus = 0;
-		world.player_platform.SetScale(level_conf.platform_scale);
+		world.player_platform.SetPrototype(platform_proto, level_conf.platform_scale);
 		score.platform_bonus = 1.0f;
 	}
 
@@ -510,7 +508,7 @@ void Game::SetupBonuses() {
 
 void Game::ResetBonuses() {
 	platform_bonus = 0;
-	world.player_platform.SetScale(level_conf.platform_scale);
+	world.player_platform.SetPrototype(platform_proto, level_conf.platform_scale);
 	score.platform_bonus = 1.0f;
 
 	gravity_bonus = 0;

@@ -60,6 +60,10 @@ struct Vector {
 		return *this - normal*(2.0f*proj);
 	}
 
+	bool IsNull() const {
+		return (x == 0.0f && y == 0.0f);
+	}
+
 	Vector operator + (const Vector &o) const {
 		return Vector(x + o.x, y + o.y);
 	}
@@ -72,7 +76,19 @@ struct Vector {
 		return Vector(x*factor, y*factor);
 	}
 
+	Vector operator / (float factor) const {
+		return Vector(x/factor, y/factor);
+	}
+
 	Vector operator * (const Vector &o) const {
 		return Vector(x*o.x, y*o.y);
+	}
+
+	bool operator == (const Vector &o) const {
+		return (x == o.x && y == o.y);
+	}
+
+	bool operator != (const Vector &o) const {
+		return (x != o.x || y != o.y);
 	}
 };

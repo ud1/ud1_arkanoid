@@ -193,7 +193,7 @@ bool Window::Create(int w, int h) {
 	hwnd = CreateWindowEx (
 		windowExtendedStyle,
 		TEXT("ud1_arkanoid"),	// Class Name
-		TEXT("ud1 arkanoid"),	// Window Title
+		TEXT("ud1 arkanoid (Для конкурса арканоидов gamedev.ru)"),	// Window Title
 		windowStyle,
 		scrRect.left, scrRect.top,				// Window x,y Position
 		real_width = scrRect.right - scrRect.left,		// Window Width

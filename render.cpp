@@ -64,12 +64,13 @@ void RenderData::RenderUnmovableObjectsAndPlatform() {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, elements_textureID);
 	glBegin(GL_TRIANGLES);
-	auto end_it = game->world.unmvbl_objs.end();
-	for (auto it = game->world.unmvbl_objs.begin(); it != end_it; ++it) {
-		const UnmovableObject &obj = **it;
+	auto end_it = game->world.objects.end();
+	for (auto it = game->world.objects.begin(); it != end_it; ++it) {
+		PhysicalObject &obj = **it;
+		const std::vector<RenderTriangle> &tris = obj.GetRenderObject().GetTriangles();
 
-		for (size_t i = 0; i < obj.render_triangles.size(); ++i) {
-			const RenderTriangle &tri = obj.render_triangles[i];
+		for (size_t i = 0; i < tris.size(); ++i) {
+			const RenderTriangle &tri = tris[i];
 			glTexCoord2f(tri.vertexes[0].tex_coord.x / elements.width, tri.vertexes[0].tex_coord.y / elements.height);
 			glVertex2f(tri.vertexes[0].coord.x, tri.vertexes[0].coord.y);
 
@@ -81,10 +82,11 @@ void RenderData::RenderUnmovableObjectsAndPlatform() {
 		}
 	}
 
-	const UnmovableObject &obj = game->world.player_platform;
+	PhysicalObject &obj = game->world.player_platform;
+	const std::vector<RenderTriangle> &tris = obj.GetRenderObject().GetTriangles();
 
-	for (size_t i = 0; i < obj.render_triangles.size(); ++i) {
-		const RenderTriangle &tri = obj.render_triangles[i];
+	for (size_t i = 0; i < tris.size(); ++i) {
+		const RenderTriangle &tri = tris[i];
 		glTexCoord2f(tri.vertexes[0].tex_coord.x / elements.width, tri.vertexes[0].tex_coord.y / elements.height);
 		glVertex2f(tri.vertexes[0].coord.x, tri.vertexes[0].coord.y);
 

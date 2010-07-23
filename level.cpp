@@ -20,12 +20,13 @@ Level::Level() {
 	velocity_loss_wall = 0.05f;
 	velocity_loss_platform = 0.2f;
 
-	surf_friction_koef_wall = 0.05f;
-	surf_friction_koef_platform = 0.15f;
+	surf_friction_coef_wall = 0.05f;
+	surf_friction_coef_platform = 0.15f;
 }
 
 bool Level::LoadFromFile(const char *filename) {
 	bricks.clear();
+	balls.clear();
 	std::ifstream file(filename);
 	if (!file)
 		return false;
@@ -44,7 +45,7 @@ bool Level::LoadFromFile(const char *filename) {
 			continue;
 		if (cmd == "brick") {
 			brick_info info;
-			if (!(iss >> info.type >> info.life >> info.velocity_loss >> info.surf_friction_koef >> info.scale
+			if (!(iss >> info.type >> info.life >> info.velocity_loss >> info.surf_friction_coef >> info.scale
 				>> info.pos >> info.angle >> info.points 
 				>> info.is_static >> info.bonus).fail())
 			{
@@ -86,11 +87,11 @@ bool Level::LoadFromFile(const char *filename) {
 		} else if (cmd == "velocity_loss_platform") {
 			iss >> velocity_loss_platform;
 
-		} else if (cmd == "surf_friction_koef_wall") {
-			iss >> surf_friction_koef_wall;
+		} else if (cmd == "surf_friction_coef_wall") {
+			iss >> surf_friction_coef_wall;
 
-		} else if (cmd == "surf_friction_koef_platform") {
-			iss >> surf_friction_koef_platform;
+		} else if (cmd == "surf_friction_coef_platform") {
+			iss >> surf_friction_coef_platform;
 		}
 	}
 

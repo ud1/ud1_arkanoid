@@ -1,13 +1,13 @@
 #pragma once
 
-#include "unmovable_object.h"
+#include "physical_object.h"
 #include "level.h"
 
 struct World;
 struct Game;
 struct ObjectPrototype;
 
-struct GameBrick : public UnmovableObject {
+struct GameBrick : public PhysicalObject {
 	GameBrick(Game *game);
 	void Initialize(const Level::brick_info &info, const ObjectPrototype *proto);
 	void Collide();

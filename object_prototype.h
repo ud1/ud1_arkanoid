@@ -1,34 +1,17 @@
 #pragma once
 
-#include "vector2d.h"
-#include "segment.h"
+#include "polygon_collision_object.h"
+#include "render_object.h"
+
 #include <map>
-#include <vector>
 #include <string>
 
-struct SegmentProto {
-	Vector p1, p2;
-};
-
-struct RenderVertex {
-	Vector coord;
-	Vector tex_coord;
-};
-
-struct RenderTriangle {
-	RenderVertex vertexes[3];
-};
 
 struct ObjectPrototype {
 	bool LoadFromFile(const char *filename);
 
-	ObjectPrototype &operator = (const ObjectPrototype &p) {
-		segs = p.segs;
-		render_triangles = p.render_triangles;
-		return *this;
-	}
-	std::vector<SegmentProto> segs;
-	std::vector<RenderTriangle> render_triangles;
+	PlygonColObjPrototype col_obj_proto;
+	RenderObjectPrototype render_obj_proto;
 };
 
 struct ObjectPrototypeManager {

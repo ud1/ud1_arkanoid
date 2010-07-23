@@ -1,6 +1,6 @@
 #pragma once
 
-#include "unmovable_object.h"
+#include "physical_object.h"
 #include "ball.h"
 #include "bmp.h"
 #include "chars_info.h"
