@@ -17,11 +17,11 @@ void CollideBallToPhysObj(Ball &ball, PhysObj &obj, float delta_t) {
 	ball.Move(time_to_collide);
 	float vel_coef = 2.0f - obj.GetVelocityLoss();
 	ball.velocity = ball.velocity + dst.normal * (vel_coef*dst.velocity);
-	float delta_rot_speed = Min(std::abs(vel_coef*dst.velocity*obj.GetSurfaceFrictionCoef()/ball_inertia_moment), std::abs(dst.rotation_speed));
+	float delta_rot_speed = Min(std::abs(vel_coef*dst.velocity*obj.GetSurfaceFrictionCoef()/ball_inertia_moment), std::abs(dst.rotation_speed/(1.0f+ball_inertia_moment)));
 	if (dst.rotation_speed < 0.0f)
 		delta_rot_speed = -delta_rot_speed;
 	ball.rotation_speed += delta_rot_speed;
-	ball.velocity = ball.velocity + dst.normal.RotateHalfPi()*(delta_rot_speed*ball_inertia_moment);
+	ball.velocity = ball.velocity - dst.normal.RotateHalfPi()*(delta_rot_speed*ball_inertia_moment);
 	ball.Move(delta_t - time_to_collide);
 
 	dst = BallToPhysObjDistance(ball, obj);
@@ -46,14 +46,14 @@ void CollideBallToBall(Ball &b1, Ball &b2, float delta_t) {
 	b2.Move(time_to_collide);
 	b1.velocity = b1.velocity + dst.normal * (dst.velocity);
 	b2.velocity = b2.velocity - dst.normal * (dst.velocity);
-	float delta_rot_speed = std::min(std::abs(dst.velocity*ball_to_ball_surf_friction_coef/ball_inertia_moment), std::abs(dst.rotation_speed/2.0f));
+	float delta_rot_speed = std::min(std::abs(dst.velocity*ball_to_ball_surf_friction_coef/ball_inertia_moment), std::abs(dst.rotation_speed/(2.0f*(1.0f+ball_inertia_moment))));
 	if (dst.rotation_speed < 0.0f)
 		delta_rot_speed = -delta_rot_speed;
 	b1.rotation_speed += delta_rot_speed;
-	b2.rotation_speed -= delta_rot_speed;
+	b2.rotation_speed += delta_rot_speed;
 	Vector tangent = dst.normal.RotateHalfPi();
-	b1.velocity = b1.velocity + tangent*(delta_rot_speed*ball_inertia_moment);
-	b2.velocity = b2.velocity - tangent*(delta_rot_speed*ball_inertia_moment);
+	b1.velocity = b1.velocity - tangent*(delta_rot_speed*ball_inertia_moment);
+	b2.velocity = b2.velocity + tangent*(delta_rot_speed*ball_inertia_moment);
 	b1.Move(delta_t - time_to_collide);
 	b2.Move(delta_t - time_to_collide);
 

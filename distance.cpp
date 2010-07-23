@@ -45,7 +45,7 @@ DistanceInfo Distance(const Vector &point, const Vector &point_velocity, float r
 	}
 
 	res.velocity = res.normal.Dot(closest_point_vel - point_velocity);
-	res.rotation_speed = res.normal.Cross(closest_point_vel - point_velocity) - rotation_speed;
+	res.rotation_speed = -res.normal.Cross(closest_point_vel - point_velocity) - rotation_speed;
 	return res;
 }
 
@@ -98,7 +98,7 @@ DistanceInfo BallToPhysObjDistance(const Ball &b1, const Ball &b2) {
 	res.normal.Normalize();
 	res.closest_point = b2.position + res.normal * b2.rad;
 	res.velocity = (b2.velocity - b1.velocity).Dot(res.normal);
-	res.rotation_speed = -(b1.rotation_speed + b2.rotation_speed);
+	res.rotation_speed = -(b1.rotation_speed + b2.rotation_speed) + (b2.velocity - b1.velocity).Cross(res.normal);
 	return res;
 }
 

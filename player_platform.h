@@ -22,7 +22,6 @@ struct PlayerPlatform : public PhysicalObject {
 
 	const Vector &SetTarget(Vector pos) {
 		target = ClampPosition(pos);
-		printf("%f %f\n", target.x, target.y);
 		return target;
 	}
 
