@@ -5,10 +5,10 @@ balls 5
 platform_scale 1.5 0.3
 
 // short_platform_scale x y
-short_platform_scale 0.75 0.2
+short_platform_scale 1.0 0.2
 
 // long_platform_scale x y
-long_platform_scale 3.0 0.5
+long_platform_scale 2.0 0.4
 
 // gravity x y
 gravity 0.0 -7.0
@@ -40,18 +40,18 @@ clouds 0.5 0.1 0.1
 // brick brick1_type life velocity_loss surf_friction_coef scale_x scale_y pos_x pos_y angle_in_degrees points is_static bonus
 brick block2	1 0.05 0.05 2.5 0.3 5.0	7.5 90 20 1 0
 brick block2	1 0.05 0.05 2.5 0.3 5.0	5.0 90 20 1 0
-brick block1	1 0.05 0.05 0.5 0.5 5.0	3.0 0 20 1 0
+brick block1	1 0.05 0.05 0.5 0.5773 5.0	3.0 0 20 1 0
 // pos_sine period start_time end_time time_offset symmetric delta_pos_x delta_pos_y
 pos_sine 1 0 1 0 1  0 -0.1
 
 brick block2	1 0.05 0.05 2.5 0.3 7.5	8.5 90 20 1 0
 brick block2	1 0.05 0.05 2.5 0.3 7.5	6.0 90 20 1 0
-brick block1	1 0.05 0.05 0.5 0.5 7.5	4.0 0 20 1 0
+brick block1	1 0.05 0.05 0.5 0.5773 7.5	4.0 0 20 1 0
 pos_sine 0.9 0 0.9 0 1  0 -0.05
 
 brick block2	1 0.05 0.05 2.5 0.3 2.5	8.5 90 20 1 0
 brick block2	1 0.05 0.05 2.5 0.3 2.5	6.0 90 20 1 0
-brick block1	1 0.05 0.05 0.5 0.5 2.5	4.0 0 20 1 0
+brick block1	1 0.05 0.05 0.5 0.5773 2.5	4.0 0 20 1 0
 pos_sine 0.9 0 0.9 0 1  0 -0.05
 
 brick brick12	2 0.05 0.05 0.9 0.3 4.5	9.5 0 70 0 1

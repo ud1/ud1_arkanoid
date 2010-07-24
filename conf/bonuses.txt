@@ -23,3 +23,6 @@ bonus 6 263 203 287 227 0 1 0
 
 // timer speed up
 bonus 7 263 203 287 227 1 0 0
+
+// reserved ball
+bonus 8 359 203 383 227 0 1 0

@@ -22,7 +22,7 @@ void GameBrick::Collide() {
 		game->score.Add(game_points);
 
 		--life;
-		if (life <= 0) {
+		if (life == 0) {
 			if (bonus >= BONUS_MIN && bonus < BONUS_MAX) {
 				game->CreateBonus(position, bonus);
 			} else if (bonus == BONUS_NEW_BALL) {

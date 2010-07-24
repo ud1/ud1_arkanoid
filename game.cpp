@@ -252,6 +252,9 @@ void Game::ActivateBonus(const Bonus &bonus) {
 		timer.SetTimeAcceleration(2.0);
 		score.time_bonus = 2.0f;
 		break;
+	case BONUS_RESERVE_BALL:
+		++reserve_balls;
+		break;
 	}
 }
 

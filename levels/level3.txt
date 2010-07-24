@@ -5,10 +5,10 @@ balls 5
 platform_scale 1.5 0.3
 
 // short_platform_scale x y
-short_platform_scale 0.75 0.2
+short_platform_scale 1.0 0.2
 
 // long_platform_scale x y
-long_platform_scale 3.0 0.5
+long_platform_scale 2.0 0.4
 
 // gravity x y
 gravity 0.0 -7.0

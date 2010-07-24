@@ -69,7 +69,13 @@ struct Mover {
 
 protected:
 	float get_factor(const move_base &mv, float t) {
-		t = fmod(t + mv.time_offset, mv.period);
+		t += mv.time_offset;
+		if (t > mv.period) {
+			t = fmod(t, mv.period);
+		} else if (t < 0.0f) {
+			t += mv.period*(1 + (int)(-t/mv.period));
+		}
+
 		if (t <= mv.start_time)
 			return 0.0f;
 

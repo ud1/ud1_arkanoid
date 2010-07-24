@@ -4,6 +4,9 @@
 #include "vector2d.h"
 #include "mover.h"
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 struct PhysicalObject {
 	virtual ~PhysicalObject(){}
 
@@ -27,7 +30,15 @@ struct PhysicalObject {
 
 	void SetTarget(Vector pos, float angle_, float delta_t) {
 		velocity = (pos - position)/delta_t;
-		angular_velocity = (angle_ - angle)/delta_t;
+		float d_angle = fmod(abs(angle_ - angle), (float) (2.0*M_PI));
+		if (angle_ < angle)
+			d_angle = -d_angle;
+		if (d_angle < (float) -M_PI)
+			d_angle += (float) (2.0*M_PI);
+		if (d_angle > (float) M_PI)
+			d_angle -= (float) (2.0*M_PI);
+
+		angular_velocity = d_angle/delta_t;
 	}
 
 	void CalculateVelocity(float abs_t, float delta_t) {
@@ -40,6 +51,10 @@ struct PhysicalObject {
 
 		test_position = position + velocity*delta_t;
 		test_angle = angle + angular_velocity*delta_t;
+		if (test_angle > (float) M_PI)
+			test_angle -= (float) (2.0*M_PI);
+		if (test_angle < (float) -M_PI)
+			test_angle += (float) (2.0*M_PI);
 		collision_object.SetPosition(test_position, test_angle, velocity, angular_velocity);
 	}
 
