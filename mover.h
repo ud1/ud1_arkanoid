@@ -23,9 +23,14 @@ struct Mover {
 		float delta_angle;
 	};
 
+	struct angle_sine : public move_base {
+		float delta_angle;
+	};
+
 	std::vector<pos_lin> pos_lin_funcs;
 	std::vector<pos_sine> pos_sine_funcs;
 	std::vector<angle_lin> angle_lin_funcs;
+	std::vector<angle_sine> angle_sine_funcs;
 
 	Vector GetPositionDelta(float t) {
 		Vector res = Vector(0.0f, 0.0f);
@@ -47,6 +52,10 @@ struct Mover {
 		for (size_t i = 0; i < angle_lin_funcs_size; ++i)
 			res += Calc(angle_lin_funcs[i], t);
 
+		size_t angle_sine_funcs_size = angle_sine_funcs.size();
+		for (size_t i = 0; i < angle_sine_funcs_size; ++i)
+			res += Calc(angle_sine_funcs[i], t);
+
 		return res;
 	}
 
@@ -54,6 +63,7 @@ struct Mover {
 		pos_lin_funcs = o.pos_lin_funcs;
 		pos_sine_funcs = o.pos_sine_funcs;
 		angle_lin_funcs = o.angle_lin_funcs;
+		angle_sine_funcs = o.angle_sine_funcs;
 		return *this;
 	}
 
@@ -90,5 +100,10 @@ protected:
 
 	float Calc(const angle_lin &a_lin, float t) {
 		return a_lin.delta_angle*get_factor((const move_base &) a_lin, t);
+	}
+
+	float Calc(const angle_sine &a_sine, float t) {
+		float c = (float) cos(get_factor((const move_base &) a_sine, t)*M_PI);
+		return a_sine.delta_angle*( (1.0f - c)/2.0f );
 	}
 };

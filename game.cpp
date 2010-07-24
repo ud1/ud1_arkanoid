@@ -112,6 +112,10 @@ bool Game::Initialize() {
 
 
 void Game::RunOnce() {
+	glClearStencil(0);
+	glClear(GL_STENCIL_BUFFER_BIT);
+	glStencilMask(0);
+
 	double t1 = game_timer.GlobalTime();
 	switch (state) {
 		case PAUSE:
@@ -465,6 +469,9 @@ void Game::DoFinal() {
 void Game::Render() {
 	render_data.RenderField();
 	render_data.RenderStats();
+
+	float t = (float) timer.GlobalTime();
+	render_data.RenderClouds(t*level_conf.clouds_speed.x, t*level_conf.clouds_speed.y, level_conf.clouds_alpha);
 }
 
 void Game::RenderDark(bool state_switch) {

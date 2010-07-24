@@ -11,6 +11,8 @@ bool RenderData::Init() {
 		return false;
 	if (!background.LoadFromBmpFile("data/background.bmp"))
 		return false;
+	if (!clouds.LoadFromBmpFile("data/clouds.bmp"))
+		return false;
 	
 	if (!big_chars.LoadFromFile("conf/big_chars.txt")) {
 		std::cerr << "Invalid conf/big_chars.txt\n";
@@ -54,6 +56,16 @@ bool RenderData::Init() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, background.width, background.height, 0, GL_RGB, GL_UNSIGNED_BYTE, background.data);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// upload cloud texture
+	glGenTextures(1, &clouds_textureID);
+	glBindTexture(GL_TEXTURE_2D, clouds_textureID);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, clouds.width, clouds.height, 0, GL_RGB, GL_UNSIGNED_BYTE, clouds.data);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return true;
@@ -182,7 +194,12 @@ void RenderData::RenderField() {
 
 	StartRenderField(game->GetFieldLogicSize());
 
+	glStencilMask(-1);
+	glStencilFunc(GL_ALWAYS, 1, 0);
+	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+	glEnable(GL_STENCIL_TEST);
 	RenderUnmovableObjectsAndPlatform();
+	glDisable(GL_STENCIL_TEST);
 
 	for (size_t i = 0; i < game->world.bonuses.size(); ++i) {
 		RenderBonus(game->world.bonuses[i]);
@@ -191,6 +208,42 @@ void RenderData::RenderField() {
 	for (size_t i = 0; i < game->world.balls.size(); ++i) {
 		RenderBall(game->world.balls[i]);
 	}
+}
+
+void RenderData::RenderClouds(float dtx, float dty, float alpha) {
+	glEnable(GL_STENCIL_TEST);
+	glEnable(GL_BLEND);
+	glStencilFunc(GL_EQUAL, 1, -1);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	StartRenderStat();
+	float x = game->form_config.field.x;
+	float y = game->form_config.field.y;
+	float w = game->form_config.field.width;
+	float h = game->form_config.field.height;
+	float tx = (float) w / (float) clouds.width;
+	float ty = (float) h / (float) clouds.height;
+	glColor4f(1.0f, 1.0f, 1.0f, alpha);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, clouds_textureID);
+	glBegin(GL_QUADS);
+	glTexCoord2f(dtx, dty);
+	glVertex2f(x, y);
+
+	glTexCoord2f(tx + dtx, dty);
+	glVertex2f(x + w, y);
+
+	glTexCoord2f(tx + dtx, ty + dty);
+	glVertex2f(x + w, y + h);
+
+	glTexCoord2f(dtx, ty + dty);
+	glVertex2f(x, y + h);
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glDisable(GL_BLEND);
+	glDisable(GL_STENCIL_TEST);
 }
 
 void RenderData::RenderStatsPanel() {

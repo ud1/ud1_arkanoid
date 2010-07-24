@@ -129,7 +129,7 @@ bool Window::InitializeOpenGL() {
 		pfd.cAccumAlphaBits	= 0;
 
 	pfd.cDepthBits		= 0;
-	pfd.cStencilBits	= 0;
+	pfd.cStencilBits	= 1;
 	pfd.cAuxBuffers		= 0;
 	pfd.iLayerType		= 0;
 	pfd.bReserved		= 0;

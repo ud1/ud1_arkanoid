@@ -42,6 +42,7 @@ struct RenderData {
 	
 	void RenderField();
 	void RenderStats();
+	void RenderClouds(float dtx, float dty, float alpha);
 	void RenderDark(float darkness);
 
 	void PrintTextBig(const std::string &text, Vector pos, Color color) {
@@ -59,10 +60,11 @@ protected:
 	Image elements;
 	Image stat_img;
 	Image background;
+	Image clouds;
 	BallRenderData ball_rdata;
 
 	int stat_tex_w, stat_tex_h;
-	GLuint elements_textureID, stat_textureID, background_textureID;
+	GLuint elements_textureID, stat_textureID, background_textureID, clouds_textureID;
 
 	void RenderBackground();
 	void RenderUnmovableObjectsAndPlatform();

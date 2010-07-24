@@ -25,3 +25,9 @@ std::istream &operator >> (std::istream &s, Mover::angle_lin &a_lin) {
 	a_lin.delta_angle *= (float) M_PI/180.f;
 	return s;
 }
+
+std::istream &operator >> (std::istream &s, Mover::angle_sine &a_sine) {
+	s >> a_sine.period >> a_sine.start_time >> a_sine.end_time >> a_sine.time_offset >> a_sine.symmetric >> a_sine.delta_angle;
+	a_sine.delta_angle *= (float) M_PI/180.f;
+	return s;
+}

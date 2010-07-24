@@ -34,6 +34,9 @@ surf_friction_coef_wall 0.05
 // surf_friction_coef_platform value
 surf_friction_coef_platform 0.15
 
+// clouds alpha vx vy
+clouds 0.5 0.1 0.1
+
 // brick brick1_type life velocity_loss surf_friction_coef scale_x scale_y pos_x pos_y angle_in_degrees points is_static bonus
 brick brick1 1 0.05 0.05 0.9 0.3 0.5 8 -50 15 0 0
 brick brick1 1 0.05 0.05 0.9 0.3 1.5 8 -45 15 0 0

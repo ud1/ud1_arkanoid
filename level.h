@@ -34,6 +34,9 @@ struct Level {
 	Vector gravity_left;
 	Vector gravity_right;
 
+	Vector clouds_speed;
+	float clouds_alpha;
+
 	double platform_bonus_time, gravity_bonus_time, time_bonus_time;
 
 	float velocity_loss_wall, velocity_loss_platform;

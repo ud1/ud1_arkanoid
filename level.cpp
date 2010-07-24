@@ -15,6 +15,9 @@ Level::Level() {
 	gravity_left = Vector(-3.0f, -7.0f);
 	gravity_right = Vector(3.0f, 7.0f);
 
+	clouds_speed = Vector(0.1f, 0.1f);
+	clouds_alpha = 0.5f;
+
 	platform_bonus_time = gravity_bonus_time = time_bonus_time = 2.0;
 
 	velocity_loss_wall = 0.05f;
@@ -76,6 +79,14 @@ bool Level::LoadFromFile(const char *filename) {
 					info.mover.angle_lin_funcs.push_back(a_lin);
 				}
 			}
+		} else if (cmd == "angle_sine") {
+			if (bricks.size()) {
+				Level::brick_info &info = bricks[bricks.size() - 1];
+				Mover::angle_sine a_sine;
+				if (iss >> a_sine) {
+					info.mover.angle_sine_funcs.push_back(a_sine);
+				}
+			}
 		} else if (cmd == "ball") {
 			ball_info info;
 			if (!(iss >> info.position >> info.velocity).fail()) {
@@ -116,6 +127,9 @@ bool Level::LoadFromFile(const char *filename) {
 
 		} else if (cmd == "surf_friction_coef_platform") {
 			iss >> surf_friction_coef_platform;
+
+		} else if (cmd == "clouds") {
+			iss >> clouds_alpha >> clouds_speed;
 		}
 	}
 
