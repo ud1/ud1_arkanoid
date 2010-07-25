@@ -15,3 +15,9 @@ level_position 730 542 766 570
 
 // mouse_smoothing seconds
 mouse_smoothing 0.07
+
+// background_volume volume
+background_volume 0.8
+
+// velocity_volume_factor value
+velocity_volume_factor 0.05

@@ -1,4 +1,5 @@
 #include "world.h"
+#include "sounds.h"
 
 template<typename T>
 T Min(T a, T b) { return a < b ? a : b; }
@@ -7,7 +8,7 @@ const float ball_inertia_moment = 0.4f;
 const float ball_to_ball_surf_friction_coef = 0.4f;
 
 template<typename PhysObj>
-void CollideBallToPhysObj(Ball &ball, PhysObj &obj, float delta_t) {
+float CollideBallToPhysObj(Ball &ball, PhysObj &obj, float delta_t) {
 	DistanceInfo dst = BallToPhysObjDistance(ball, obj);
 	float time_to_collide = dst.distance / dst.velocity;
 	if (time_to_collide > delta_t)
@@ -16,6 +17,7 @@ void CollideBallToPhysObj(Ball &ball, PhysObj &obj, float delta_t) {
 		time_to_collide = 0.0f;
 	ball.Move(time_to_collide);
 	float vel_coef = 2.0f - obj.GetVelocityLoss();
+	float res = std::abs(vel_coef*dst.velocity);
 	ball.velocity = ball.velocity + dst.normal * (vel_coef*dst.velocity);
 	float delta_rot_speed = Min(std::abs(vel_coef*dst.velocity*obj.GetSurfaceFrictionCoef()/ball_inertia_moment), std::abs(dst.rotation_speed/(1.0f+ball_inertia_moment)));
 	if (dst.rotation_speed < 0.0f)
@@ -33,9 +35,10 @@ void CollideBallToPhysObj(Ball &ball, PhysObj &obj, float delta_t) {
 	ball.Collide();
 	obj.Collide();
 	ball.pos_updated = true;
+	return res;
 }
 
-void CollideBallToBall(Ball &b1, Ball &b2, float delta_t) {
+float CollideBallToBall(Ball &b1, Ball &b2, float delta_t) {
 	DistanceInfo dst = BallToPhysObjDistance(b1, b2);
 	float time_to_collide = dst.distance / dst.velocity;
 	if (time_to_collide > delta_t)
@@ -44,6 +47,7 @@ void CollideBallToBall(Ball &b1, Ball &b2, float delta_t) {
 		time_to_collide = 0.0f;
 	b1.Move(time_to_collide);
 	b2.Move(time_to_collide);
+	float res = std::abs(dst.velocity);
 	b1.velocity = b1.velocity + dst.normal * (dst.velocity);
 	b2.velocity = b2.velocity - dst.normal * (dst.velocity);
 	float delta_rot_speed = std::min(std::abs(dst.velocity*ball_to_ball_surf_friction_coef/ball_inertia_moment), std::abs(dst.rotation_speed/(2.0f*(1.0f+ball_inertia_moment))));
@@ -68,6 +72,7 @@ void CollideBallToBall(Ball &b1, Ball &b2, float delta_t) {
 
 	b1.pos_updated = true;
 	b2.pos_updated = true;
+	return res;
 }
 
 const float min_delta_t = 1.0f/1500.0f;
@@ -188,30 +193,38 @@ bool World::TryToSimulate(float delta_t) {
 
 		// Check collision to walls
 		for (size_t j = 0; j < walls.size(); ++j) {
-			if (BallToPhysObjCollided(tmp_ball, walls[j]))
-				CollideBallToPhysObj(ball, walls[j], delta_t);
+			if (BallToPhysObjCollided(tmp_ball, walls[j])) {
+				float dv = CollideBallToPhysObj(ball, walls[j], delta_t);
+				snd_system->Play(BALL_TO_WALL_SOUND, ClampDeltaVel(dv));
+			}
 		}
 
 		// Check collision to objects
 		for (auto it = objects.begin(); it != objects.end(); ++it) {
 			PhysicalObject *obj = *it;
 			TestMoveObj(*obj, delta_t);
-			if (BallToPhysObjCollided(tmp_ball, *obj))
-				CollideBallToPhysObj(ball, *obj, delta_t);
+			if (BallToPhysObjCollided(tmp_ball, *obj)) {
+				float dv = CollideBallToPhysObj(ball, *obj, delta_t);
+				snd_system->Play(BALL_TO_BRICK_SOUND, ClampDeltaVel(dv));
+			}
 		}
 
 		// Check collision to player platform
 		TestMoveObj(player_platform, delta_t);
-		if (BallToPhysObjCollided(tmp_ball, player_platform))
-			CollideBallToPhysObj(ball, player_platform, delta_t);
+		if (BallToPhysObjCollided(tmp_ball, player_platform)) {
+			float dv = CollideBallToPhysObj(ball, player_platform, delta_t);
+			snd_system->Play(BALL_TO_PLATFORM_SOUND, ClampDeltaVel(dv));
+		}
 
 		// Check collision to other balls
 		for (size_t j = i+1; j < balls_size; ++j) {
 			Ball tmp_ball2;
 			tmp_ball2 = balls[j];
 			tmp_ball2.Move(delta_t);
-			if (BallToPhysObjCollided(tmp_ball, tmp_ball2))
-				CollideBallToBall(ball, balls[j], delta_t);
+			if (BallToPhysObjCollided(tmp_ball, tmp_ball2)) {
+				float dv = CollideBallToBall(ball, balls[j], delta_t);
+				snd_system->Play(BALL_TO_BALL_SOUND, ClampDeltaVel(dv));
+			}
 		}
 
 		if (!ball.pos_updated) {
@@ -262,4 +275,12 @@ void World::RemoveOutBonuses() {
 void World::AddNewBalls() {
 	balls.insert(balls.end(), new_balls.begin(), new_balls.end());
 	new_balls.clear();
+}
+
+float World::ClampDeltaVel(float v) {
+	v *= vel_volume_factor;
+	printf("%f\n", v);
+	if (v > 1.0f)
+		v = 1.0f;
+	return v;
 }

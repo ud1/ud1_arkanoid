@@ -25,6 +25,8 @@ struct FormConfig {
 	} level_position;
 
 	float mouse_smoothing;
+	float background_volume;
+	float velocity_volume_factor;
 
 	bool LoadFromFile(const char *filename);
 };

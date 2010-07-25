@@ -10,6 +10,7 @@
 #include "level.h"
 #include "game_brick.h"
 #include "bonus.h"
+#include "sound_system.h"
 
 #include <vector>
 #include <set>
@@ -26,6 +27,11 @@ struct World {
 
 	World() {
 		Clear();
+	}
+
+	void SetSoundSystem(SoundSystem *s, float vel_volume_factor_) {
+		snd_system = s;
+		vel_volume_factor = vel_volume_factor_;
 	}
 
 	void SimulateUntil(float t);
@@ -93,6 +99,8 @@ protected:
 		for_deletion.clear();
 	}
 
+	float ClampDeltaVel(float v);
+
 	void SimulateDelta(float delta_t);
 	bool TryToSimulate(float delta_t);
 
@@ -103,6 +111,8 @@ protected:
 	std::set<PhysicalObject *> for_deletion;
 	std::set<PhysicalObject *> active_blocks;
 	std::vector<Ball> new_balls;
+	SoundSystem *snd_system;
+	float vel_volume_factor;
 };
 
 

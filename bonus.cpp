@@ -1,6 +1,7 @@
 #include "bonus.h"
 #include "bonus_info.h"
 #include "game.h"
+#include "sounds.h"
 
 Bonus::Bonus(const Vector &pos, const BonusInfo &info, int type, Game *game_) {
 	rad = info.bonus_rad;
@@ -17,4 +18,5 @@ void Bonus::Move(float delta_t) {
 
 void Bonus::Collide() {
 	game->ActivateBonus(*this);
+	game->sound_system.Play(BONUS_SOUND, 10.0f);
 }

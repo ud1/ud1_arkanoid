@@ -25,6 +25,9 @@ FormConfig::FormConfig() {
 	score_position.bottom = 109;
 
 	mouse_smoothing = 0.07f;
+
+	background_volume = 0.8f;
+	velocity_volume_factor = 0.05f;
 }
 
 bool FormConfig::LoadFromFile(const char *filename) {
@@ -61,6 +64,12 @@ bool FormConfig::LoadFromFile(const char *filename) {
 				return false;
 		} else if (cmd == "mouse_smoothing") {
 			iss >> mouse_smoothing;
+
+		} else if (cmd == "background_volume") {
+			iss >> background_volume;
+
+		} else if (cmd == "velocity_volume_factor") {
+			iss >> velocity_volume_factor;
 		}
 	}
 	return true;

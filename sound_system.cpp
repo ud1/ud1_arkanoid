@@ -18,7 +18,7 @@
 #pragma comment(lib, "libvorbis.lib")
 
 const size_t DYN_BUF_NUMBER	= 3;		// number buffers in queue
-const size_t DYN_BUF_SIZE = 44000*3;	// Buffer size
+const size_t DYN_BUF_SIZE = 44000*5;	// Buffer size
 
 size_t ReadOgg(void *ptr, size_t size, size_t nmemb, void *datasource) {
 	std::istream *File = reinterpret_cast<std::istream*>(datasource);
@@ -270,6 +270,10 @@ struct SoundSystem::SoundSystemImpl {
 	void Play(size_t n, float volume) {
 		if (!initialized)
 			return;
+
+		if (volume < 0.05f)
+			return;
+
 		ALuint source = sources[source_to_play_ind];
 		source_to_play_ind = (source_to_play_ind + 1) % sources.size();
 

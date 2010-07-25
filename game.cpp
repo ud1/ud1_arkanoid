@@ -1,4 +1,5 @@
 #include "game.h"
+#include "sounds.h"
 
 #include <windows.h>
 
@@ -70,6 +71,13 @@ void Game::InitializeField(float walls_velocity_loss, float surf_friction_coef_w
 	world.walls.push_back(wall);
 }
 
+void SoundThreadFunc(Game *game) {
+	while (game->isRunning) {
+		game->sound_system.Update();
+		Sleep(100);
+	}
+}
+
 bool Game::Initialize() {
 	if (!form_config.LoadFromFile("conf/form.txt")) {
 		std::cerr << "Invalid form.txt\n";
@@ -106,7 +114,16 @@ bool Game::Initialize() {
 	}
 
 	sound_system.Initialize();
-	sound_system.PlayBackground("data/background.ogg", 1.0f);
+	sound_system.PlayBackground("data/background.ogg", form_config.background_volume);
+	sound_system.SetSndNumber(SOUNDS_NUMBER);
+	sound_system.Load(BALL_TO_WALL_SOUND, "data/wall.ogg");
+	sound_system.Load(BALL_TO_BALL_SOUND, "data/ball.ogg");
+	sound_system.Load(BALL_TO_BRICK_SOUND, "data/brick.ogg");
+	sound_system.Load(BALL_TO_PLATFORM_SOUND, "data/platform.ogg");
+	sound_system.Load(BONUS_SOUND, "data/bonus.ogg");
+	sound_thread = boost::thread(SoundThreadFunc, this);
+
+	world.SetSoundSystem(&sound_system, form_config.velocity_volume_factor);
 
 	timer.ResetGlobalTime(0.0);
 	game_timer.ResetGlobalTime(0.0);
@@ -115,8 +132,6 @@ bool Game::Initialize() {
 
 
 void Game::RunOnce() {
-	sound_system.Update();
-
 	glClearStencil(0);
 	glClear(GL_STENCIL_BUFFER_BIT);
 	glStencilMask(0);
