@@ -129,7 +129,7 @@ bool Window::InitializeOpenGL() {
 		pfd.cAccumAlphaBits	= 0;
 
 	pfd.cDepthBits		= 0;
-	pfd.cStencilBits	= 1;
+	pfd.cStencilBits	= disable_effects ? 0 : 1;
 	pfd.cAuxBuffers		= 0;
 	pfd.iLayerType		= 0;
 	pfd.bReserved		= 0;
@@ -160,7 +160,7 @@ bool Window::InitializeOpenGL() {
 	return true;
 }
 
-Window *Window::CreateWindowInstance(int w, int h) {
+Window *Window::CreateWindowInstance(int w, int h, bool disable_effects) {
 	if ( !RegisterWindowClass() ) {
 		MessageBox (HWND_DESKTOP, TEXT("RegisterClassEx Failed!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
 		return NULL;
@@ -168,6 +168,8 @@ Window *Window::CreateWindowInstance(int w, int h) {
 
 	if (window == NULL)
 		window = new Window;
+
+	window->disable_effects = disable_effects;
 
 	if (!window->Create(w, h)) {
 		delete window;

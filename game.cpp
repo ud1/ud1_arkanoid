@@ -104,11 +104,11 @@ bool Game::Initialize() {
 		return false;
 	}
 
-	window = Window::CreateWindowInstance(form_config.window.width, form_config.window.height);
+	window = Window::CreateWindowInstance(form_config.window.width, form_config.window.height, form_config.disable_effects);
 	if (!window)
 		return false;
 
-	if (!render_data.Init()) {
+	if (!render_data.Init(form_config.disable_effects)) {
 		MessageBox (HWND_DESKTOP, TEXT("Render data initialization failed!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}
@@ -132,9 +132,11 @@ bool Game::Initialize() {
 
 
 void Game::RunOnce() {
-	glClearStencil(0);
-	glClear(GL_STENCIL_BUFFER_BIT);
-	glStencilMask(0);
+	if (!form_config.disable_effects) {
+		glClearStencil(0);
+		glClear(GL_STENCIL_BUFFER_BIT);
+		glStencilMask(0);
+	}
 
 	double t1 = game_timer.GlobalTime();
 	switch (state) {

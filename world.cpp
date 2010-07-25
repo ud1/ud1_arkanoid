@@ -279,7 +279,6 @@ void World::AddNewBalls() {
 
 float World::ClampDeltaVel(float v) {
 	v *= vel_volume_factor;
-	printf("%f\n", v);
 	if (v > 1.0f)
 		v = 1.0f;
 	return v;

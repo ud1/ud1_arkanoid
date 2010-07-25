@@ -19,13 +19,14 @@ struct Window {
 		SetCursorPos(p.x, p.y);
 	}
 
-	static Window *CreateWindowInstance(int width, int height);
+	static Window *CreateWindowInstance(int width, int height, bool disable_effects);
 	
 	static Window *GetWindowInstance() {
 		return window;
 	}
 protected:
 	static Window *window;
+	bool disable_effects;
 	Window();
 	static bool RegisterWindowClass();
 	bool InitializeOpenGL();

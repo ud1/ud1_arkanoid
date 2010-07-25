@@ -198,7 +198,7 @@ struct Sound {
 	ALuint source_id;
 };
 
-const size_t SOURCE_NUMBER = 10;
+const size_t SOURCE_NUMBER = 5;
 
 struct SoundSystem::SoundSystemImpl {
 	SoundSystemImpl() {

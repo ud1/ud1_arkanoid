@@ -38,7 +38,7 @@ struct RenderData {
 		game = game_;
 	}
 
-	bool Init();
+	bool Init(bool disable_effects);
 	
 	void RenderField();
 	void RenderStats();
@@ -62,6 +62,7 @@ protected:
 	Image background;
 	Image clouds;
 	BallRenderData ball_rdata;
+	bool disable_effects;
 
 	int stat_tex_w, stat_tex_h;
 	GLuint elements_textureID, stat_textureID, background_textureID, clouds_textureID;

@@ -28,6 +28,8 @@ FormConfig::FormConfig() {
 
 	background_volume = 0.8f;
 	velocity_volume_factor = 0.05f;
+
+	disable_effects = false;
 }
 
 bool FormConfig::LoadFromFile(const char *filename) {
@@ -70,6 +72,9 @@ bool FormConfig::LoadFromFile(const char *filename) {
 
 		} else if (cmd == "velocity_volume_factor") {
 			iss >> velocity_volume_factor;
+
+		} else if (cmd == "disable_effects") {
+			iss >> disable_effects;
 		}
 	}
 	return true;

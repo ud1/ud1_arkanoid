@@ -21,3 +21,5 @@ background_volume 0.8
 
 // velocity_volume_factor value
 velocity_volume_factor 0.05
+
+//disable_effects 1

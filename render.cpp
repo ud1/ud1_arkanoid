@@ -4,7 +4,8 @@
 #include <iostream>
 #include <sstream>
 
-bool RenderData::Init() {
+bool RenderData::Init(bool disable_effects_) {
+	disable_effects = disable_effects_;
 	if (!elements.LoadFromBmpFile("data/images.bmp"))
 		return false;
 	if (!stat_img.LoadFromBmpFile("data/stats.bmp"))
@@ -194,12 +195,18 @@ void RenderData::RenderField() {
 
 	StartRenderField(game->GetFieldLogicSize());
 
-	glStencilMask(-1);
-	glStencilFunc(GL_ALWAYS, 1, 0);
-	glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
-	glEnable(GL_STENCIL_TEST);
+	if (!disable_effects) {
+		glStencilMask(-1);
+		glStencilFunc(GL_ALWAYS, 1, 0);
+		glStencilOp(GL_KEEP, GL_REPLACE, GL_REPLACE);
+		glEnable(GL_STENCIL_TEST);
+	}
+
 	RenderUnmovableObjectsAndPlatform();
-	glDisable(GL_STENCIL_TEST);
+
+	if (!disable_effects) {
+		glDisable(GL_STENCIL_TEST);
+	}
 
 	for (size_t i = 0; i < game->world.bonuses.size(); ++i) {
 		RenderBonus(game->world.bonuses[i]);
@@ -211,6 +218,8 @@ void RenderData::RenderField() {
 }
 
 void RenderData::RenderClouds(float dtx, float dty, float alpha) {
+	if (disable_effects)
+		return;
 	glEnable(GL_STENCIL_TEST);
 	glEnable(GL_BLEND);
 	glStencilFunc(GL_EQUAL, 1, -1);
