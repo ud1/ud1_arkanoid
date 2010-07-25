@@ -10,6 +10,7 @@
 #include "bonus.h"
 #include "bonus_info.h"
 #include "mouse.h"
+#include "sound_system.h"
 
 struct Game {
 	FormConfig form_config;
@@ -23,6 +24,7 @@ struct Game {
 	Mouse mouse;
 	Vector field_to_window_scale;
 	Vector window_to_field_scale;
+	SoundSystem sound_system;
 
 	enum State {
 		PAUSE,

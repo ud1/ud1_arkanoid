@@ -105,6 +105,9 @@ bool Game::Initialize() {
 		return false;
 	}
 
+	sound_system.Initialize();
+	sound_system.PlayBackground("data/background.ogg", 1.0f);
+
 	timer.ResetGlobalTime(0.0);
 	game_timer.ResetGlobalTime(0.0);
 	return true;
@@ -112,6 +115,8 @@ bool Game::Initialize() {
 
 
 void Game::RunOnce() {
+	sound_system.Update();
+
 	glClearStencil(0);
 	glClear(GL_STENCIL_BUFFER_BIT);
 	glStencilMask(0);
