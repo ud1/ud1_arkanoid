@@ -5,10 +5,10 @@ balls 5
 platform_scale 1.5 0.3
 
 // short_platform_scale x y
-short_platform_scale 0.75 0.2
+short_platform_scale 1.0 0.2
 
 // long_platform_scale x y
-long_platform_scale 3.0 0.5
+long_platform_scale 2.0 0.4
 
 // gravity x y
 gravity 0.0 -7.0
@@ -34,79 +34,97 @@ surf_friction_coef_wall 0.05
 // surf_friction_coef_platform value
 surf_friction_coef_platform 0.15
 
+// clouds alpha vx vy
+clouds 0.5 0.1 0.1
+
 // brick brick1_type life velocity_loss surf_friction_coef scale_x scale_y pos_x pos_y angle_in_degrees points is_static bonus
 
-brick brick24	1 0.2 0.05 0.9 0.3 2	6.0 45 100 0 2
+brick brick24	3 0.2 0.05 0.9 0.3 2	6.0 45 100 0 2
 pos_sine	6 0 6 0.00		1 6 0
 pos_sine	3 0 3 0.75		1 0 3
 angle_lin	6 0 6 0.00		0 360
 
-brick brick24	1 0.2 0.05 0.9 0.3 2	6.0 45 100 0 4
+brick brick24	3 0.2 0.05 0.9 0.3 2	6.0 45 100 0 4
 pos_sine	6 0 6 0.66		1 6 0
 pos_sine	3 0 3 1.41		1 0 3
 angle_lin	6 0 6 0.66		0 360
 
-brick brick24	1 0.2 0.05 0.9 0.3 2	6.0 45 100 0 6
+brick brick24	3 0.2 0.05 0.9 0.3 2	6.0 45 100 0 6
 pos_sine	6 0 6 1.32		1 6 0
 pos_sine	3 0 3 2.07		1 0 3
 angle_lin	6 0 6 1.32		0 360
 
-brick brick24	1 0.2 0.05 0.9 0.3 2	6.0 45 100 0 8
+brick brick24	3 0.2 0.05 0.9 0.3 2	6.0 45 100 0 3
 pos_sine	6 0 6 2.00		1 6 0
 pos_sine	3 0 3 2.75		1 0 3
 angle_lin	6 0 6 2.00		0 360
 
-brick brick24	1 0.2 0.05 0.9 0.3 2	6.0 45 100 0 5
+brick brick24	3 0.2 0.05 0.9 0.3 2	6.0 45 100 0 5
 pos_sine	6 0 6 2.66		1 6 0
 pos_sine	3 0 3 3.41		1 0 3
 angle_lin	6 0 6 2.66		0 360
 
-brick brick24	1 0.2 0.05 0.9 0.3 2	6.0 45 100 0 6
+brick brick24	3 0.2 0.05 0.9 0.3 2	6.0 45 100 0 6
 pos_sine	6 0 6 3.32		1 6 0
 pos_sine	3 0 3 4.07		1 0 3
 angle_lin	6 0 6 3.32		0 360
 
-brick brick24	1 0.2 0.05 0.9 0.3 2	6.0 45 60 0 1
+brick brick24	3 0.2 0.05 0.9 0.3 2	6.0 45 60 0 1
 pos_sine	6 0 6 4.00		1 6 0
 pos_sine	3 0 3 4.75		1 0 3
 angle_lin	6 0 6 4.00		0 360
 
-brick brick24	1 0.2 0.05 0.9 0.3 2	6.0 45 60 0 8
+brick brick24	3 0.2 0.05 0.9 0.3 2	6.0 45 60 0 5
 pos_sine	6 0 6 4.66		1 6 0
 pos_sine	3 0 3 5.41		1 0 3
 angle_lin	6 0 6 4.66		0 360
 
-brick brick24	1 0.2 0.05 0.9 0.3 2	6.0 45 60 0 4
+brick brick24	3 0.2 0.05 0.9 0.3 2	6.0 45 60 0 4
 pos_sine	6 0 6 5.32		1 6 0
 pos_sine	3 0 3 6.07		1 0 3
 angle_lin	6 0 6 5.32		0 360
 
 
-brick brick25	1 0.1 0.05 0.9 0.3	0.6 9.0 90 60 0 2
+brick brick25	2 0.1 0.05 0.9 0.3	0.6 9.0 90 60 0 2
 pos_sine	3 0 0.5 0.0		0 0.5 0
 pos_sine	3 1.5 2 0.0		0 -0.5 0
-brick brick25	1 0.1 0.05 0.9 0.3	0.6 8.0 90 60 0 6
+brick brick25	2 0.1 0.05 0.9 0.3	0.6 8.0 90 60 0 6
 pos_sine	3 0 0.5 0.2		0 0.5 0
 pos_sine	3 1.5 2 0.2		0 -0.5 0
-brick brick25	1 0.1 0.05 0.9 0.3	0.6 7.0 90 60 0 4
+brick brick25	2 0.1 0.05 0.9 0.3	0.6 7.0 90 60 0 4
 pos_sine	3 0 0.5 0.4		0 0.5 0
 pos_sine	3 1.5 2 0.4		0 -0.5 0
-brick brick25	1 0.1 0.05 0.9 0.3	0.6 6.0 90 60 0 6
+brick brick25	2 0.1 0.05 0.9 0.3	0.6 6.0 90 60 0 6
 pos_sine	3 0 0.5 0.6		0 0.5 0
 pos_sine	3 1.5 2 0.6		0 -0.5 0
 
-brick brick26	1 0.1 0.05 0.9 0.3	9.4 9.0 90 60 0 5
+brick brick26	2 0.1 0.05 0.9 0.3	9.4 9.0 90 60 0 5
 pos_sine	3 0 0.5 0.0		0 -0.5 0
 pos_sine	3 1.5 2 0.0		0 0.5 0
-brick brick26	1 0.1 0.05 0.9 0.3	9.4 8.0 90 60 0 5
+brick brick26	2 0.1 0.05 0.9 0.3	9.4 8.0 90 60 0 5
 pos_sine	3 0 0.5 0.2		0 -0.5 0
 pos_sine	3 1.5 2 0.2		0 0.5 0
-brick brick26	1 0.1 0.05 0.9 0.3	9.4 7.0 90 60 0 8
+brick brick26	2 0.1 0.05 0.9 0.3	9.4 7.0 90 60 0 8
 pos_sine	3 0 0.5 0.4		0 -0.5 0
 pos_sine	3 1.5 2 0.4		0 0.5 0
-brick brick26	1 0.1 0.05 0.9 0.3	9.4 6.0 90 60 0 6
+brick brick26	2 0.1 0.05 0.9 0.3	9.4 6.0 90 60 0 4
 pos_sine	3 0 0.5 0.6		0 -0.5 0
 pos_sine	3 1.5 2 0.6		0 0.5 0
+
+
+brick brick18	1 0.1 0.05 0.9 0.3	4.5 9.5 0 60 0 3
+pos_sine	2 0 2 0		1 0 0.2
+brick brick18	1 0.1 0.05 0.9 0.3	5.5 9.5 0 60 0 4
+pos_sine	2 0 2 0		1 0 0.2
+brick brick18	1 0.1 0.05 0.9 0.3	5.0 9.0 0 60 0 5
+pos_sine	2 0 2 0		1 0.0 0.3
+
+brick brick18	1 0.1 0.05 0.9 0.3	5.0 6.0 0 60 0 6
+pos_sine	2 0 2 0		1 0.0 -0.3
+brick brick18	1 0.1 0.05 0.9 0.3	4.5 5.5 0 60 0 2
+pos_sine	2 0 2 0		1 0 -0.2
+brick brick18	1 0.1 0.05 0.9 0.3	5.5 5.5 0 60 0 3
+pos_sine	2 0 2 0		1 0 -0.2
 
 
 brick block3	500 0.1 0.05 0.9 0.3	0.5	4.5 0 60 1 0

@@ -154,6 +154,7 @@ struct Sound {
 			source_setted = true;
 			alSourceQueueBuffers(source_id_, buffers.size(), &buffers[0]);
 		} else {
+			alSourceStop(source_id_);
 			alSourcei(source_id_, AL_BUFFER, buffers[0]);
 		}
 

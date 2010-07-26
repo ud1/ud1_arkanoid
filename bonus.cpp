@@ -18,5 +18,5 @@ void Bonus::Move(float delta_t) {
 
 void Bonus::Collide() {
 	game->ActivateBonus(*this);
-	game->sound_system.Play(BONUS_SOUND, 10.0f);
+	game->sound_system.Play(BONUS_SOUND, 1.0f);
 }
