@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <stdlib.h>
 
 #include "keycodes.h"
 #include "game.h"
@@ -74,9 +75,12 @@ void mmove(int x, int y) {
 
 void on_char(char ch) {}
 
-int main(int argc, char **argv) {
-	if (argc == 2)
-		game.level = atoi(argv[1]) - 1;
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+{
+	char *level_env = getenv("ARK_LEVEL");
+	if (level_env) {
+		game.level = atoi(level_env) - 1;
+	}
 
 	if (!game.Initialize())
 		return 1;
