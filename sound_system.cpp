@@ -74,16 +74,33 @@ struct Sound {
 	}
 
 	~Sound() {
-		Stop();
+		Reset();
+	}
 
-		ov_clear(vrb_file);
-		delete vrb_file;
+	void Reset() {
+		if (file.is_open()) {
+			file.close();
+		}
+		file.clear();
+		if (vrb_file) {
+			ov_clear(vrb_file);
+			delete vrb_file;
+		}
 
-		alDeleteBuffers(buffers.size(), &buffers[0]);
-		buffers.clear();
+		if (buffers.size()) {
+			Stop();
+			alDeleteBuffers(buffers.size(), &buffers[0]);
+			buffers.clear();
+		}
+
+		vrb_file = NULL;
+		source_setted = false;
+		looped = false;
+		opened = false;
 	}
 
 	bool Open(const std::string &filename, bool streamed_) {
+		Reset();
 		streamed = streamed_;
 		file.open(filename.c_str(), std::ios_base::in | std::ios_base::binary);
 		if (!file)
@@ -214,6 +231,7 @@ struct SoundSystem::SoundSystemImpl {
 
 		alDeleteSources(sources.size(), &sources[0]);
 		alDeleteSources(1, &backgound_source);
+		alDeleteSources(1, &snd_source);
 		sources.clear();
 
 		alcMakeContextCurrent(NULL);
@@ -238,6 +256,7 @@ struct SoundSystem::SoundSystemImpl {
 		sources.resize(SOURCE_NUMBER);
 		alGenSources(SOURCE_NUMBER, &sources[0]);
 		alGenSources(1, &backgound_source);
+		alGenSources(1, &snd_source);
 
 		initialized = true;
 		return true;
@@ -282,6 +301,17 @@ struct SoundSystem::SoundSystemImpl {
 		sounds[n]->PlayOnSource(source, false);
 	}
 
+	bool Play(const std::string &filename, float volume) {
+		if (!initialized)
+			return false;
+		if (snd.Open(filename, false)) {
+			alSourcef(snd_source, AL_GAIN, volume);
+			snd.PlayOnSource(snd_source, false);
+			return true;
+		}
+		return false;
+	}
+
 	bool PlayBackground(const std::string &filename, float volume) {
 		if (!initialized)
 			return false;
@@ -303,9 +333,9 @@ struct SoundSystem::SoundSystemImpl {
 
 protected:
 	std::vector<Sound *> sounds;
-	Sound backgound;
+	Sound backgound, snd;
 	std::vector<ALuint> sources;
-	ALuint backgound_source;
+	ALuint backgound_source, snd_source;
 	size_t source_to_play_ind;
 	bool initialized;
 	ALCdevice *device;
@@ -334,6 +364,10 @@ bool SoundSystem::Load(size_t n, const std::string &filename) {
 
 void SoundSystem::Play(size_t n, float volume) {
 	pimpl->Play(n, volume);
+}
+
+bool SoundSystem::Play(const std::string &filename, float volume) {
+	return pimpl->Play(filename, volume);
 }
 
 bool SoundSystem::PlayBackground(const std::string &filename, float volume) {

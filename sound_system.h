@@ -12,6 +12,7 @@ struct SoundSystem {
 	bool Load(size_t n, const std::string &filename);
 	void Play(size_t n, float volume);
 
+	bool Play(const std::string &filename, float volume);
 	bool PlayBackground(const std::string &filename, float volume);
 
 	void Update();

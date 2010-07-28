@@ -421,6 +421,9 @@ void Game::DoNewLevel() {
 		file_name << "levels/level" << ++level << ".txt";
 		if (level_conf.LoadFromFile(file_name.str().c_str())) {
 			LoadLevel(level_conf);
+			std::stringstream start_lev_file_name;
+			start_lev_file_name << "data/lev" << level << ".ogg";
+			sound_system.Play(start_lev_file_name.str(), 1.0f);
 		} else {
 			state = FINAL;
 			state_switch = true;
