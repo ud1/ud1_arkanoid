@@ -4,6 +4,46 @@
 #include <iostream>
 #include <sstream>
 
+void Build2DMipmaps(int width, int height, const unsigned char *data) {
+	unsigned char *old_data = new unsigned char[width*height*3];
+	memcpy(old_data, data, width*height*3);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	int lod = 0;
+	while ((width /= 2) && (height /= 2)) {
+		++lod;
+		unsigned char *new_data = new unsigned char[width*height*3];
+		for (int i = 0; i < height; ++i) {
+			for (int j = 0; j < width; ++j) {
+				unsigned int v = 
+					old_data[3*((2*i+0)*(2*width)	+ 2*j + 0)+0] + 
+					old_data[3*((2*i+1)*(2*width)	+ 2*j + 0)+0] +
+					old_data[3*((2*i+0)*(2*width)	+ 2*j + 1)+0] +
+					old_data[3*((2*i+1)*(2*width)	+ 2*j + 1)+0];
+				new_data[3*(i*width+j)+0] = (unsigned char) (v/4);
+
+				v = old_data[3*((2*i+0)*(2*width)	+ 2*j + 0)+1] + 
+					old_data[3*((2*i+1)*(2*width)	+ 2*j + 0)+1] +
+					old_data[3*((2*i+0)*(2*width)	+ 2*j + 1)+1] +
+					old_data[3*((2*i+1)*(2*width)	+ 2*j + 1)+1];
+				new_data[3*(i*width+j)+1] = (unsigned char) (v/4);
+
+				v = old_data[3*((2*i+0)*(2*width)	+ 2*j + 0)+2] + 
+					old_data[3*((2*i+1)*(2*width)	+ 2*j + 0)+2] +
+					old_data[3*((2*i+0)*(2*width)	+ 2*j + 1)+2] +
+					old_data[3*((2*i+1)*(2*width)	+ 2*j + 1)+2];
+				new_data[3*(i*width+j)+2] = (unsigned char) (v/4);
+			}
+		}
+
+		glTexImage2D(GL_TEXTURE_2D, lod, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, new_data);
+		delete []old_data;
+		old_data = new_data;
+	}
+
+	delete []old_data;
+}
+
 bool RenderData::Init(bool disable_effects_) {
 	disable_effects = disable_effects_;
 	if (!elements.LoadFromBmpFile("data/images.bmp"))
@@ -35,7 +75,7 @@ bool RenderData::Init(bool disable_effects_) {
 	glBindTexture(GL_TEXTURE_2D, elements_textureID);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, elements.width, elements.height, GL_RGB, GL_UNSIGNED_BYTE, elements.data);
+	Build2DMipmaps(elements.width, elements.height, elements.data);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// upload stat_img texture

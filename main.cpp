@@ -5,7 +5,6 @@
 #include "game.h"
 
 #pragma comment( lib, "opengl32.lib" )
-#pragma comment( lib, "glu32.lib" )
 
 Game game;
 

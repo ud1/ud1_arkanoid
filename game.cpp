@@ -6,7 +6,6 @@
 #include <iostream>
 #include <sstream>
 #include <gl/GL.h>
-#include <gl/GLu.h>
 
 void Game::Pause() {
 	bool p = (state == PAUSE);
@@ -71,13 +70,6 @@ void Game::InitializeField(float walls_velocity_loss, float surf_friction_coef_w
 	world.walls.push_back(wall);
 }
 
-void SoundThreadFunc(Game *game) {
-	while (game->isRunning) {
-		game->sound_system.Update();
-		Sleep(100);
-	}
-}
-
 bool Game::Initialize() {
 	if (!form_config.LoadFromFile("conf/form.txt")) {
 		std::cerr << "Invalid form.txt\n";
@@ -121,7 +113,6 @@ bool Game::Initialize() {
 	sound_system.Load(BALL_TO_BRICK_SOUND, "data/brick.ogg");
 	sound_system.Load(BALL_TO_PLATFORM_SOUND, "data/platform.ogg");
 	sound_system.Load(BONUS_SOUND, "data/bonus.ogg");
-	sound_thread = boost::thread(SoundThreadFunc, this);
 
 	world.SetSoundSystem(&sound_system, form_config.velocity_volume_factor);
 
@@ -166,6 +157,7 @@ void Game::RunOnce() {
 	}
 
 	SwapBuffers(window->hDC);
+	sound_system.Update();
 	double t2 = game_timer.GlobalTime();
 	double dt = t2 - t1;
 	if (dt < 0.015)

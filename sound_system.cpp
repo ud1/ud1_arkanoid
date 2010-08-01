@@ -229,7 +229,8 @@ struct SoundSystem::SoundSystemImpl {
 	~SoundSystemImpl() {
 		Clear();
 
-		alDeleteSources(sources.size(), &sources[0]);
+		if (sources.size())
+			alDeleteSources(sources.size(), &sources[0]);
 		alDeleteSources(1, &backgound_source);
 		alDeleteSources(1, &snd_source);
 		sources.clear();

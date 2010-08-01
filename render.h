@@ -9,7 +9,6 @@
 
 #include <windows.h>
 #include <gl/GL.h>
-#include <gl/GLu.h>
 
 inline int round_up_pos_of_2(int val) {
 	for (int i = 0; i < 31; ++i) {

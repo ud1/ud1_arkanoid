@@ -1,7 +1,6 @@
 #include "window.h"
 
 #include <gl/GL.h>
-#include <gl/GLu.h>
 
 Window *Window::window = NULL;
 

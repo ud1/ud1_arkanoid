@@ -12,8 +12,6 @@
 #include "mouse.h"
 #include "sound_system.h"
 
-#include <boost/thread.hpp>
-
 struct Game {
 	FormConfig form_config;
 	World world;
@@ -27,7 +25,6 @@ struct Game {
 	Vector field_to_window_scale;
 	Vector window_to_field_scale;
 	SoundSystem sound_system;
-	boost::thread sound_thread;
 
 	enum State {
 		PAUSE,
@@ -53,7 +50,6 @@ struct Game {
 
 	~Game() {
 		isRunning = false;
-		sound_thread.join();
 	}
 
 	Vector GetFieldLogicSize() const {
