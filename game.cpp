@@ -1,11 +1,10 @@
 #include "game.h"
 #include "sounds.h"
 
-#include <windows.h>
-
 #include <iostream>
 #include <sstream>
-#include <gl/GL.h>
+#include <GL/glew.h>
+#include <SDL2/SDL.h>
 
 void Game::Pause() {
 	bool p = (state == PAUSE);
@@ -14,14 +13,14 @@ void Game::Pause() {
 		state_switch = true;
 		game_timer.ResetGlobalTime(game_global_time);
 		timer.ResetGlobalTime(global_time);
-		ShowCursor(FALSE);
+		SDL_SetRelativeMouseMode(SDL_TRUE);
 	} else {
 		prev_state = state;
 		state = PAUSE;
 		state_switch = true;
 		game_global_time = game_timer.GlobalTime();
 		global_time = timer.GlobalTime();
-		ShowCursor(TRUE);
+		SDL_SetRelativeMouseMode(SDL_FALSE);
 	}
 }
 
@@ -70,6 +69,13 @@ void Game::InitializeField(float walls_velocity_loss, float surf_friction_coef_w
 	world.walls.push_back(wall);
 }
 
+void SoundThreadFunc(Game *game) {
+	while (game->isRunning) {
+		game->sound_system.Update();
+		SDL_Delay(100);
+	}
+}
+
 bool Game::Initialize() {
 	if (!form_config.LoadFromFile("conf/form.txt")) {
 		std::cerr << "Invalid form.txt\n";
@@ -101,7 +107,7 @@ bool Game::Initialize() {
 		return false;
 
 	if (!render_data.Init(form_config.disable_effects)) {
-		MessageBox (HWND_DESKTOP, TEXT("Render data initialization failed!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
+		std::cerr << "Render data initialization failed!\n";
 		return false;
 	}
 
@@ -114,6 +120,8 @@ bool Game::Initialize() {
 	sound_system.Load(BALL_TO_PLATFORM_SOUND, "data/platform.ogg");
 	sound_system.Load(BONUS_SOUND, "data/bonus.ogg");
 
+	sound_thread = std::thread(SoundThreadFunc, this);
+
 	world.SetSoundSystem(&sound_system, form_config.velocity_volume_factor);
 
 	timer.ResetGlobalTime(0.0);
@@ -121,6 +129,9 @@ bool Game::Initialize() {
 	return true;
 }
 
+void Game::Destroy() {
+	delete window;
+}
 
 void Game::RunOnce() {
 	if (!form_config.disable_effects) {
@@ -156,12 +167,11 @@ void Game::RunOnce() {
 			break;
 	}
 
-	SwapBuffers(window->hDC);
-	sound_system.Update();
+	SDL_GL_SwapWindow(window->window);
 	double t2 = game_timer.GlobalTime();
 	double dt = t2 - t1;
-	if (dt < 0.015)
-		Sleep(20 - (int)(dt*1000.0));
+	/*if (dt < 0.015)
+		SDL_Delay(20 - (int)(dt*1000.0));*/
 }
 
 void Game::Run() {
@@ -169,14 +179,11 @@ void Game::Run() {
 	prev_state = NEW_LEVEL;
 	state_switch = true;
 
-	MSG msg;
 	while (isRunning) {
-		if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE) != 0) {
-			TranslateMessage(&msg);
-			DispatchMessage (&msg);
-		} else {
+		window->ProcessMessages();
+
+		if (isRunning)
 			RunOnce();
-		}
 	}
 }
 
@@ -332,7 +339,6 @@ void Game::DoSimulation() {
 		state_switch = false;
 		timer.ResetGlobalTime(global_time);
 		prev_global_time = global_time;
-		MoveCursorToCenter();
 		mouse.AbsSet(world.player_platform.GetTarget()*field_to_window_scale);
 	}
 
@@ -404,7 +410,7 @@ void Game::DoNewLevel() {
 
 		if (world.ActiveBlockNumber())
 			return;
-		
+
 		global_time = 0.0;
 		timer.ResetGlobalTime(0.0);
 
@@ -459,7 +465,7 @@ void Game::DoFinal() {
 
 	if (state_switch) {
 		state_switch = false;
-		ShowCursor(TRUE);
+		SDL_SetRelativeMouseMode(SDL_FALSE);
 	}
 
 	std::string str = "Game over";
@@ -482,7 +488,7 @@ void Game::DoFinal() {
 		world.Clear();
 		state = NEW_LEVEL;
 		state_switch = true;
-		ShowCursor(FALSE);
+		SDL_SetRelativeMouseMode(SDL_TRUE);
 	}
 }
 

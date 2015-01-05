@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <cstring>
 
 bool BallRenderData::LoadFromFile(const char *filename) {
 	std::ifstream file(filename);

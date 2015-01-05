@@ -1,4 +1,5 @@
 #include "polygon_collision_object.h"
+#include <cstdlib>
 
 void PolygonCollisionObject::SetPrototype(const PlygonColObjPrototype &proto, Vector scale) {
 	max_radius = 0.0f;

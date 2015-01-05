@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vector2d.h"
+#include <cmath>
 
 struct Ball {
 	Vector position, velocity, gravity;
@@ -21,7 +22,7 @@ struct Ball {
 
 	// Calculates speed bonus
 	float SpeedBonus(const Vector &field_logic_size) const {
-		float bottom_speed = sqrt(abs(2*gravity.y*position.y) + velocity.Length2());
+		float bottom_speed = sqrt(std::abs(2*gravity.y*position.y) + velocity.Length2());
 		return bottom_speed / field_logic_size.y;
 	}
 

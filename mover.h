@@ -4,6 +4,7 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <cstdlib>
 
 struct Mover {
 	struct move_base {

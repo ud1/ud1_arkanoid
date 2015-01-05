@@ -1,10 +1,7 @@
 ﻿#include <iostream>
 #include <stdlib.h>
 
-#include "keycodes.h"
 #include "game.h"
-
-#pragma comment( lib, "opengl32.lib" )
 
 Game game;
 
@@ -30,60 +27,54 @@ void on_deactivate() {
 void key_down(int key) {
 	if (game.GetState() == Game::SIMULATION) {
 		float angle = 0.2f;
-		if (key == KEY_KEY_D) {
+		if (key == SDLK_d) {
 			game.world.player_platform.SetTargetAngle(-angle);
-		} else if (key == KEY_KEY_A) {
+		} else if (key == SDLK_a) {
 			game.world.player_platform.SetTargetAngle(angle);
 		}
 	}
 }
 
 void key_up(int key) {
-	if (key == KEY_ESCAPE) {
+	if (key == SDLK_ESCAPE) {
 		game.Pause();
 	}
 
-	if (key == KEY_KEY_A || key == KEY_KEY_D) {
+	if (key == SDLK_a || key == SDLK_d) {
 		game.world.player_platform.SetTargetAngle(0.0f);
 	}
 
 	if (game.GetState() == Game::SIMULATION) {
-		if (key == KEY_KEY_R) {
+		if (key == SDLK_r) {
 			game.ThrowBall();
 		}
 	}
 
 	if (game.GetState() == Game::FINAL) {
-		if (key == KEY_RETURN || key == KEY_SPACE) {
+		if (key == SDLK_RETURN || key == SDLK_SPACE) {
 			game.RestartGame();
 		}
 	}
 }
 
 void mmove(int x, int y) {
-	int dx = x - game.window->width/2;
-	int dy = y - game.window->height/2;
-	if (dx == 0 && dy == 0)
-		return;
-
 	if (game.GetState() == Game::SIMULATION) {
-		game.mouse.SetDeltaPos((float) dx, (float) -dy);
-		game.MoveCursorToCenter();
+		game.mouse.SetDeltaPos((float) x, (float) -y);
 	}
 }
 
 void on_char(char ch) {}
 
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+int main(int argc, char **argv)
 {
-	char *level_env = getenv("ARK_LEVEL");
-	if (level_env) {
-		game.level = atoi(level_env) - 1;
+	if (argc > 1) {
+		game.level = atoi(argv[1]) - 1;
 	}
 
 	if (!game.Initialize())
 		return 1;
 
 	game.Run();
+	game.Destroy();
 	return 0;
 }

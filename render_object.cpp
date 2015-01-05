@@ -1,4 +1,5 @@
 #include "render_object.h"
+#include <cstdlib>
 
 void RenderObject::SetPrototype(const RenderObjectPrototype &proto, Vector scale) {
 	size_t render_triangles_size = proto.render_triangles.size();

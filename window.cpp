@@ -1,8 +1,7 @@
 #include "window.h"
+#include <iostream>
 
-#include <gl/GL.h>
-
-Window *Window::window = NULL;
+Window *Window::s_window = NULL;
 
 void Reshape() {
 	Window *window = Window::GetWindowInstance();
@@ -17,205 +16,91 @@ void lbup(int x, int y);
 void key_down(int key);
 void key_up(int key);
 void mmove(int x, int y);
-void on_char(char ch);
 
 void on_deactivate();
 
-LRESULT CALLBACK WindowProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	Window *window = Window::GetWindowInstance();
-	switch (uMsg) {
-	case WM_CLOSE:
-		close_main_window();
-		break;
-
-	case WM_GETMINMAXINFO: 
-		{
-			PMINMAXINFO info = (PMINMAXINFO) lParam;
-			info->ptMinTrackSize.x = window->real_width;
-			info->ptMinTrackSize.y = window->real_height;
-			info->ptMaxTrackSize.x = window->real_width;
-			info->ptMaxTrackSize.y = window->real_height;
-			break;
+void Window::ProcessMessages() {
+	SDL_Event e;
+	while (SDL_PollEvent(&e))
+	{
+		if (e.type == SDL_QUIT) {
+			close_main_window();
+		} else if (e.type == SDL_MOUSEMOTION) {
+			mmove(e.motion.xrel, e.motion.yrel);
+		} else if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
+			lbdown(e.button.x, e.button.y);
+		} else if (e.type == SDL_MOUSEBUTTONUP && e.button.button == SDL_BUTTON_LEFT) {
+			lbup(e.button.x, e.button.y);
+		} else if (e.type == SDL_KEYDOWN) {
+			key_down(e.key.keysym.sym);
+		} else if (e.type == SDL_KEYUP) {
+			key_up(e.key.keysym.sym);
+		} else if (e.type == SDL_WINDOWEVENT && (e.window.event == SDL_WINDOWEVENT_FOCUS_LOST ||
+			e.window.event== SDL_WINDOWEVENT_HIDDEN || e.window.event== SDL_WINDOWEVENT_MINIMIZED)) {
+			on_deactivate();
 		}
-
-	case WM_ACTIVATE:
-		if (wParam == WA_INACTIVE)
-			on_deactivate();
-		break;
-
-	case WM_ACTIVATEAPP:
-		if (wParam == FALSE)
-			on_deactivate();
-		break;
-
-	case WM_SIZE:
-		window->width = LOWORD(lParam);
-		window->height = HIWORD(lParam);
-		Reshape();
-		return 0;
-
-	case WM_LBUTTONDOWN:
-		lbdown(LOWORD(lParam), HIWORD(lParam));
-		break;
-
-	case WM_LBUTTONUP:
-		lbup(LOWORD(lParam), HIWORD(lParam));
-		break;
-
-	case WM_MOUSEMOVE:
-		mmove(LOWORD(lParam), HIWORD(lParam));
-		break;
-
-	case WM_CHAR:
-		on_char(wParam);
-		break;
-
-	case WM_KEYDOWN:
-		key_down(wParam);
-		break;
-
-	case WM_KEYUP:
-		key_up(wParam);
-		break;
 	}
-	return DefWindowProc (hWnd, uMsg, wParam, lParam);
-}
-
-bool Window::RegisterWindowClass() {
-	static bool already_registered = false;
-	if (already_registered)
-		return true;
-
-	WNDCLASSEX windowClass;
-	ZeroMemory( &windowClass, sizeof( WNDCLASSEX ) );
-	windowClass.cbSize			= sizeof (WNDCLASSEX);
-	windowClass.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	windowClass.lpfnWndProc		= (WNDPROC)(WindowProc);
-	windowClass.hInstance		= GetModuleHandle(NULL);
-	windowClass.hbrBackground	= (HBRUSH)(COLOR_APPWORKSPACE);
-	windowClass.hCursor			= LoadCursor(NULL, IDC_ARROW);
-	windowClass.lpszClassName	= TEXT("ud1_arkanoid");
-
-	if (RegisterClassEx (&windowClass) == 0) {
-		return false;
-	}
-
-	already_registered = true;
-	return true;
-}
-
-bool Window::InitializeOpenGL() {
-	PIXELFORMATDESCRIPTOR pfd;
-	pfd.nSize			= sizeof (PIXELFORMATDESCRIPTOR);	
-	pfd.nVersion		= 1;
-	pfd.dwFlags			= PFD_DRAW_TO_WINDOW |
-		PFD_SUPPORT_OPENGL |
-		PFD_DOUBLEBUFFER;
-	pfd.iPixelType		= PFD_TYPE_RGBA;
-	pfd.cColorBits		= 24;
-	pfd.cRedBits		=
-		pfd.cRedShift	=
-		pfd.cGreenBits	=
-		pfd.cGreenShift	=
-		pfd.cBlueBits	=
-		pfd.cBlueShift	= 0;
-	pfd.cAlphaBits		=
-		pfd.cAlphaShift	= 0;
-	pfd.cAccumBits		= 0;
-	pfd.cAccumRedBits	=
-		pfd.cAccumGreenBits =
-		pfd.cAccumBlueBits	= 
-		pfd.cAccumAlphaBits	= 0;
-
-	pfd.cDepthBits		= 0;
-	pfd.cStencilBits	= disable_effects ? 0 : 1;
-	pfd.cAuxBuffers		= 0;
-	pfd.iLayerType		= 0;
-	pfd.bReserved		= 0;
-	pfd.dwLayerMask		= 0;
-	pfd.dwVisibleMask	= 0;
-	pfd.dwDamageMask	= 0;
-
-	int pixelFormat = ChoosePixelFormat (hDC, &pfd);
-	if (pixelFormat == 0) {
-		return false;
-	}
-
-	if (SetPixelFormat (hDC, pixelFormat, NULL) == FALSE) {
-		return false;
-	}
-
-	hRC = wglCreateContext (hDC);
-	if (hRC == 0) {
-		return false;
-	}
-
-	if (wglMakeCurrent (hDC, hRC) == FALSE) {
-		wglDeleteContext (hRC);
-		return false;
-	}
-
-	Reshape();
-	return true;
 }
 
 Window *Window::CreateWindowInstance(int w, int h, bool disable_effects) {
-	if ( !RegisterWindowClass() ) {
-		MessageBox (HWND_DESKTOP, TEXT("RegisterClassEx Failed!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
-		return NULL;
-	}
+	if (s_window)
+		return s_window;
 
-	if (window == NULL)
-		window = new Window;
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+        return NULL;
 
-	window->disable_effects = disable_effects;
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, disable_effects ? 0 : 1);
 
-	if (!window->Create(w, h)) {
-		delete window;
-		window = NULL;
-		return NULL;
-	}
+	SDL_Window *window = SDL_CreateWindow("ud1 arkanoid",
+                                          SDL_WINDOWPOS_UNDEFINED,
+                                          SDL_WINDOWPOS_UNDEFINED,
+                                          w, h,
+                                          SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
-	return window;
+    SDL_GLContext glContext = SDL_GL_CreateContext(window);
+    if (glContext == NULL)
+    {
+        printf("There was an error creating the OpenGL context!\n");
+        return NULL;
+    }
+
+    const unsigned char *version = glGetString(GL_VERSION);
+    if (version == NULL)
+    {
+        printf("There was an error creating the OpenGL context!\n");
+        return NULL;
+    }
+
+    SDL_GL_MakeCurrent(window, glContext);
+
+    //MUST make a context AND make it current BEFORE glewInit()!
+    glewExperimental = GL_TRUE;
+    GLenum glew_status = glewInit();
+    if (glew_status != 0)
+    {
+        fprintf(stderr, "Error: %s\n", glewGetErrorString(glew_status));
+        return NULL;
+    }
+
+	s_window = new Window;
+	s_window->width = w;
+	s_window->height = h;
+	s_window->disable_effects = disable_effects;
+	s_window->window = window;
+	s_window->glContext = glContext;
+	return s_window;
 }
 
 Window::Window() {
-	
+
 }
 
-bool Window::Create(int w, int h) {
-	DWORD	windowStyle			= WS_POPUP | WS_OVERLAPPEDWINDOW;
-	DWORD	windowExtendedStyle = WS_EX_APPWINDOW;
-
-	int wnd_x = 100, wnd_y = 100;
-	tagRECT scrRect = {wnd_x, wnd_y, wnd_x + w, wnd_y + h};
-	AdjustWindowRectEx(&scrRect, windowStyle, false, windowExtendedStyle);
-
-	hwnd = CreateWindowEx (
-		windowExtendedStyle,
-		TEXT("ud1_arkanoid"),	// Class Name
-		TEXT("ud1 arkanoid (Для конкурса арканоидов gamedev.ru)"),	// Window Title
-		windowStyle,
-		scrRect.left, scrRect.top,				// Window x,y Position
-		real_width = scrRect.right - scrRect.left,		// Window Width
-		real_height = scrRect.bottom - scrRect.top,		// Window Height
-		HWND_DESKTOP,			// Desktop Is Window's Parent
-		0,						// No Menu
-		GetModuleHandle(NULL),	// Pass The Window Instance
-		NULL);
-
-	if ( !hwnd ) {
-		MessageBox (HWND_DESKTOP, TEXT("Create window failed!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
-		return false;
-	}
-
-	ShowWindow(hwnd, TRUE);
-
-	hDC = GetDC(hwnd);
-	if (!InitializeOpenGL()) {
-		MessageBox (HWND_DESKTOP, TEXT("GL initialization failed!"), TEXT("Error"), MB_OK | MB_ICONEXCLAMATION);
-		return false;
-	}
-
-	return true;
+Window::~Window()
+{
+	s_window = NULL;
+	SDL_GL_DeleteContext(glContext);
+    SDL_Quit();
 }

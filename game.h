@@ -11,6 +11,7 @@
 #include "bonus_info.h"
 #include "mouse.h"
 #include "sound_system.h"
+#include <thread>
 
 struct Game {
 	FormConfig form_config;
@@ -25,6 +26,7 @@ struct Game {
 	Vector field_to_window_scale;
 	Vector window_to_field_scale;
 	SoundSystem sound_system;
+	std::thread sound_thread;
 
 	enum State {
 		PAUSE,
@@ -50,6 +52,7 @@ struct Game {
 
 	~Game() {
 		isRunning = false;
+		sound_thread.join();
 	}
 
 	Vector GetFieldLogicSize() const {
@@ -57,6 +60,7 @@ struct Game {
 	}
 
 	bool Initialize();
+	void Destroy();
 
 	State GetState() const {
 		return state;
@@ -66,10 +70,6 @@ struct Game {
 
 	int GetLevel() const {
 		return level;
-	}
-
-	void MoveCursorToCenter() {
-		window->MoveCursorTo(window->width/2, window->height/2);
 	}
 
 	void InitializeField(float walls_velocity_loss, float surf_friction_coef_wall);
@@ -94,13 +94,13 @@ struct Game {
 	void Run();
 	void LoadLevel(const Level &l);
 
-	bool isRunning;
+	volatile bool isRunning;
 	int level;
 protected:
 	bool restart_game;
 	State prev_state; // Saved by Pause()
 	int reserve_balls;
-	
+
 	Level level_conf;
 
 	double global_time, game_global_time;

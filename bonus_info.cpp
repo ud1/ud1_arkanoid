@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <cstring>
 
 bool BonusInfo::LoadFromFile(const char *filename) {
 	info.resize(BONUS_MAX);
@@ -24,7 +25,7 @@ bool BonusInfo::LoadFromFile(const char *filename) {
 		if (cmd == "bonus") {
 			BonusRect rect;
 			int type;
-			if (!(iss >> type >> rect.left >> rect.top >> rect.right >> rect.bottom >> 
+			if (!(iss >> type >> rect.left >> rect.top >> rect.right >> rect.bottom >>
 				rect.red >> rect.green >> rect.blue).fail())
 			{
 				if (type >= BONUS_MIN && type < BONUS_MAX) {

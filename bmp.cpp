@@ -3,48 +3,53 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bmp.h"
+#include <cstdint>
 
-typedef unsigned char byte;
-typedef unsigned short word;
+typedef uint8_t byte;
+typedef uint16_t word;
 
 #ifdef WIN32
 #include <pshpack2.h>
+#else
+#pragma pack(push,1)
 #endif
 
 typedef struct
 {
-	word bfType; 
-    int bfSize;
-	word bfReserved1; 
+	word bfType;
+    int32_t bfSize;
+	word bfReserved1;
 	word bfReserved2;
-	int bfOffBits;
+	int32_t bfOffBits;
 } BitmapFileHeader;
 
 typedef struct tagBitmapFileHeader
 {
-	int biSize; 
-	int biWidth; 
-	int biHeight; 
-	word biPlanes; 
+	int32_t biSize;
+	int32_t biWidth;
+	int32_t biHeight;
+	word biPlanes;
 	word biBitCount;
-	int biCompression; 
-	int biSizeImage; 
-	int biXPelsPerMeter; 
-	int biYPelsPerMeter; 
-	int biClrUsed; 
-	int biClrImportant; 
-} BitmapInfoHeader; 
- 
+	int32_t biCompression;
+	int32_t biSizeImage;
+	int32_t biXPelsPerMeter;
+	int32_t biYPelsPerMeter;
+	int32_t biClrUsed;
+	int32_t biClrImportant;
+} BitmapInfoHeader;
+
 typedef struct
 {
 	byte rgbBlue;
-	byte rgbGreen; 
+	byte rgbGreen;
     byte rgbRed;
 	byte rgbReserved;
-} BitmapRGBQuad; 
+} BitmapRGBQuad;
 
 #ifdef WIN32
 #include <poppack.h>
+#else
+#pragma pack(pop)
 #endif
 
 void Image::ConvertColors() {
@@ -81,7 +86,7 @@ bool Image::LoadFromBmpFile(char * filename) {
 	// File exists?
 	if ((file = fopen (filename, "rb")) == 0)
 		return false;
-	
+
 	// Read file header
 	if (fread (&bmfh, sizeof bmfh, 1/*count*/, file) != 1)
 		goto GetOut;
@@ -149,7 +154,7 @@ bool Image::LoadFromBmpFile(char * filename) {
 	rez = true;
 	ConvertColors();
 GetOut:
-	if (file) 
+	if (file)
 		fclose (file);
 	return rez;
 }

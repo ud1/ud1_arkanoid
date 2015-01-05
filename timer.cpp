@@ -1,53 +1,38 @@
-#include <windows.h>
-#include "Timer.h"
+#include "timer.h"
 #include <assert.h>
-
-// Частота биения таймера
-UINT64 freq;
 
 //
 // CTimer
 //
 
-Timer::Timer(void) {
-	LARGE_INTEGER s;
-	// получаем частоту, предполагаем что это всегда возможно
-	QueryPerformanceFrequency(&s);
-	// сохраняем её
-	freq = s.QuadPart;
-	startTime = Time();
-	globalStartTime = startTime;
-}
-
-Timer::~Timer(void)
-{
+Timer::Timer() {
+	startTime.start();
+	globalStartTime.start();
 }
 
 // Засекаем текущее время
 void Timer::StartTiming()
 {
-	LARGE_INTEGER s;
-	// Получаем счетчик
-	QueryPerformanceCounter(&s);
-	// Запоминаем время
-	startTime = s.QuadPart;
+	startTime.start();
 }
 
 // Возвращает прошедшее время
 double Timer::TimeElapsed() {
-	elapsedTime = ((double)( Time() - startTime )/freq);
-	return elapsedTime;
+	const boost::timer::cpu_times elapsed_times = startTime.elapsed();
+	boost::timer::nanosecond_type const elapsed(elapsed_times.wall);
+	return (double) elapsed / 1.0e9;
 }
 
 double Timer::GlobalTime() {
-	__int64 temp = globalStartTime;
-	globalStartTime = Time();
-	globalTime += ((double)( globalStartTime - temp )/freq);
+	const boost::timer::cpu_times elapsed_times = globalStartTime.elapsed();
+	globalStartTime.start();
+	boost::timer::nanosecond_type const elapsed(elapsed_times.wall);
+	globalTime += (double) elapsed / 1.0e9;
 	return globalTime;
 }
 
 void Timer::ResetGlobalTime(double time) {
-	globalStartTime = Time();
+	globalStartTime.start();
 	globalTime = time;
 }
 
@@ -60,32 +45,18 @@ AdvancedTimer::AdvancedTimer() {
 }
 
 double AdvancedTimer::TimeElapsed() {
-	elapsedTime=((double)( Time() - startTime)/freq )*timeAcceleration;
-	return elapsedTime;
+	return Timer::TimeElapsed()*timeAcceleration;
 }
 
 double AdvancedTimer::GlobalTime() {
-	UINT64 temp = globalStartTime;
-	globalStartTime = Time();
-	globalTime+=((double)( globalStartTime - temp )/freq)*timeAcceleration;
+	const boost::timer::cpu_times elapsed_times = globalStartTime.elapsed();
+	globalStartTime.start();
+	boost::timer::nanosecond_type const elapsed(elapsed_times.wall);
+	globalTime += (double) elapsed / 1.0e9 * timeAcceleration;
 	return globalTime;
 }
 
 void AdvancedTimer::SetTimeAcceleration(double accel) {
 	GlobalTime();
 	timeAcceleration = accel;
-}
-
-// Текущее значение глобального счетчика
-inline __int64 Time() {
-	LARGE_INTEGER s;
-	// Получаем счетчик
-	QueryPerformanceCounter(&s);
-	// Возвращаем только четвёртую часть
-	return s.QuadPart;
-}
-
-// Преобразуем тики в секунды
-double ConvertTicksToSeconds(__int64 ticks) {
-	return (double)( ticks/freq );
 }

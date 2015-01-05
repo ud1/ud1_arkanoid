@@ -7,8 +7,8 @@
 #include "ball_render_info.h"
 #include "bonus.h"
 
-#include <windows.h>
-#include <gl/GL.h>
+#include <GL/glew.h>
+#include <SDL2/SDL.h>
 
 inline int round_up_pos_of_2(int val) {
 	for (int i = 0; i < 31; ++i) {
@@ -38,7 +38,7 @@ struct RenderData {
 	}
 
 	bool Init(bool disable_effects);
-	
+
 	void RenderField();
 	void RenderStats();
 	void RenderClouds(float dtx, float dty, float alpha);

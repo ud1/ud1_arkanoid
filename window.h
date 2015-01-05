@@ -1,34 +1,28 @@
 #pragma once
 
 #include "vector2d.h"
+#include <GL/glew.h>
+#include <SDL2/SDL.h>
 
-#include <windows.h>
+class Game;
 
 struct Window {
-	HWND hwnd;
-	HDC hDC;
-	HGLRC hRC;
 	int width, height;
-	int real_width, real_height;
-
-	void MoveCursorTo(int x, int y) const {
-		POINT p;
-		p.x = (LONG) x;
-		p.y = (LONG) y;
-		ClientToScreen(hwnd, &p);
-		SetCursorPos(p.x, p.y);
-	}
 
 	static Window *CreateWindowInstance(int width, int height, bool disable_effects);
-	
+
 	static Window *GetWindowInstance() {
-		return window;
+		return s_window;
 	}
+
+	void ProcessMessages();
+	~Window();
+
 protected:
-	static Window *window;
+	friend Game;
+	static Window *s_window;
+	SDL_Window *window;
+	SDL_GLContext glContext;
 	bool disable_effects;
 	Window();
-	static bool RegisterWindowClass();
-	bool InitializeOpenGL();
-	bool Create(int width, int height);
 };

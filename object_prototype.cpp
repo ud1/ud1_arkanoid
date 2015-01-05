@@ -1,6 +1,7 @@
 #include "object_prototype.h"
 #include <fstream>
 #include <sstream>
+#include <cstring>
 
 bool ObjectPrototype::LoadFromFile(const char *filename) {
 	std::ifstream file(filename);
@@ -26,12 +27,12 @@ bool ObjectPrototype::LoadFromFile(const char *filename) {
 			}
 		} else if (cmd == "tri") {
 			RenderTriangle tri;
-			if (!(iss 
-				>> tri.vertexes[0].coord.x >> tri.vertexes[0].coord.y 
+			if (!(iss
+				>> tri.vertexes[0].coord.x >> tri.vertexes[0].coord.y
 				>> tri.vertexes[0].tex_coord.x >> tri.vertexes[0].tex_coord.y
-				>> tri.vertexes[1].coord.x >> tri.vertexes[1].coord.y 
+				>> tri.vertexes[1].coord.x >> tri.vertexes[1].coord.y
 				>> tri.vertexes[1].tex_coord.x >> tri.vertexes[1].tex_coord.y
-				>> tri.vertexes[2].coord.x >> tri.vertexes[2].coord.y 
+				>> tri.vertexes[2].coord.x >> tri.vertexes[2].coord.y
 				>> tri.vertexes[2].tex_coord.x >> tri.vertexes[2].tex_coord.y).fail())
 			{
 				render_obj_proto.render_triangles.push_back(tri);

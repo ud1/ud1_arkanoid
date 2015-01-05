@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <cstring>
 
 FormConfig::FormConfig() {
 	window.width = 800;

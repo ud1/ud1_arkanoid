@@ -1,10 +1,11 @@
 #pragma once
 
+#include <boost/timer/timer.hpp>
+
 // Класс таймера
 class Timer {
 public:
-	Timer(void);
-	~Timer(void);
+	Timer();
 	// Сохраняем время
 	void StartTiming();
 	// Считаем разницу
@@ -18,8 +19,8 @@ public:
 
 protected:
 	// Для хранения времени
-	__int64 startTime;
-	__int64 globalStartTime;
+	boost::timer::cpu_timer startTime;
+	boost::timer::cpu_timer globalStartTime;
 };
 
 class AdvancedTimer: public Timer {
@@ -34,7 +35,3 @@ public:
 //private:
 	double timeAcceleration;
 };
-
-// Текущее значения счетчика
-__int64 Time();
-double ConvertTicksToSeconds(__int64 ticks);

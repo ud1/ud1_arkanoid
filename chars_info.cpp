@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <cstring>
 
 bool CharsInfo::LoadFromFile(const char *filename) {
 	max_width = max_height = 0.0f;

@@ -10,12 +10,8 @@
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
-#include <al.h>
-#include <alc.h>
-
-#pragma comment (lib, "OpenAL32.lib")
-#pragma comment(lib, "libogg.lib")
-#pragma comment(lib, "libvorbis.lib")
+#include <AL/al.h>
+#include <AL/alc.h>
 
 const size_t DYN_BUF_NUMBER	= 3;		// number buffers in queue
 const size_t DYN_BUF_SIZE = 44000*5;	// Buffer size
@@ -31,16 +27,16 @@ int SeekOgg(void *datasource, ogg_int64_t offset, int whence) {
 	std::ios_base::seekdir dir;
 	file->clear();
 	switch (whence) {
-		case SEEK_SET: 
-			dir = std::ios::beg;  
+		case SEEK_SET:
+			dir = std::ios::beg;
 			break;
-		case SEEK_CUR: 
-			dir = std::ios::cur; 
+		case SEEK_CUR:
+			dir = std::ios::cur;
 			break;
-		case SEEK_END: 
-			dir = std::ios::end; 
+		case SEEK_END:
+			dir = std::ios::end;
 			break;
-		default: 
+		default:
 			return -1;
 	}
 	file->seekg((std::streamoff)offset, dir);
@@ -184,7 +180,7 @@ struct Sound {
 
 		ALint processed = 0;
 		alGetSourcei(source_id, AL_BUFFERS_PROCESSED, &processed);
-		
+
 		while (processed--) {
 			ALuint buf_id;
 			alSourceUnqueueBuffers(source_id, 1, &buf_id);

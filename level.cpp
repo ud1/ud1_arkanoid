@@ -3,10 +3,11 @@
 
 #include <fstream>
 #include <sstream>
+#include <cstring>
 
 Level::Level() {
 	reserve_balls_number = 5;
-	
+
 	platform_scale = Vector(1.5f, 0.3f);
 	short_platform_scale = Vector(0.75f, 0.2f);
 	long_platform_scale = Vector(3.0f, 0.5f);
@@ -49,7 +50,7 @@ bool Level::LoadFromFile(const char *filename) {
 		if (cmd == "brick") {
 			brick_info info;
 			if (!(iss >> info.type >> info.life >> info.velocity_loss >> info.surf_friction_coef >> info.scale
-				>> info.pos >> info.angle >> info.points 
+				>> info.pos >> info.angle >> info.points
 				>> info.is_static >> info.bonus).fail())
 			{
 				info.angle *= (float) M_PI / 180.0f;
