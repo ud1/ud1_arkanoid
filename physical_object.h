@@ -30,7 +30,7 @@ struct PhysicalObject {
 
 	void SetTarget(Vector pos, float angle_, float delta_t) {
 		velocity = (pos - position)/delta_t;
-		float d_angle = fmod(abs(angle_ - angle), (float) (2.0*M_PI));
+		float d_angle = fmod(std::abs(angle_ - angle), (float) (2.0*M_PI));
 		if (angle_ < angle)
 			d_angle = -d_angle;
 		if (d_angle < (float) -M_PI)
@@ -79,7 +79,7 @@ struct PhysicalObject {
 			render_angle = angle;
 			render_object.SetPosition(position, angle);
 		}
-		
+
 		return render_object;
 	}
 

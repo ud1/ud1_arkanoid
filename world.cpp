@@ -81,7 +81,7 @@ const float max_delta_t = 1.0f/500.0f;
 void World::SimulateUntil(float t) {
 	if (t <= current_time)
 		return;
-	
+
 	player_platform.CalculateVelocity(t - current_time);
 	for (auto it = objects.begin(); it != objects.end(); ++it)
 		(*it)->CalculateVelocity(t, t - current_time);
