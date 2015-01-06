@@ -2,13 +2,13 @@
 
 #include "physical_object.h"
 #include "ball.h"
-#include "bmp.h"
 #include "chars_info.h"
 #include "ball_render_info.h"
 #include "bonus.h"
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 inline int round_up_pos_of_2(int val) {
 	for (int i = 0; i < 31; ++i) {
@@ -23,6 +23,7 @@ struct Game;
 struct Bonus;
 
 struct RenderData {
+	~RenderData();
 	struct Color {
 		float r, g, b;
 		Color() {}
@@ -56,10 +57,10 @@ struct RenderData {
 
 protected:
 	Game *game;
-	Image elements;
-	Image stat_img;
-	Image background;
-	Image clouds;
+	SDL_Surface *elements = nullptr;
+	SDL_Surface *stat_img = nullptr;
+	SDL_Surface *background = nullptr;
+	SDL_Surface *clouds = nullptr;
 	BallRenderData ball_rdata;
 	bool disable_effects;
 
