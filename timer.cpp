@@ -20,7 +20,7 @@ void Timer::StartTiming()
 double Timer::TimeElapsed() {
 	const boost::timer::cpu_times elapsed_times = startTime.elapsed();
 	boost::timer::nanosecond_type const elapsed(elapsed_times.wall);
-	return (double) elapsed / 1.0e9;
+	return elapsedTime = (double) elapsed / 1.0e9;
 }
 
 double Timer::GlobalTime() {
@@ -45,7 +45,7 @@ AdvancedTimer::AdvancedTimer() {
 }
 
 double AdvancedTimer::TimeElapsed() {
-	return Timer::TimeElapsed()*timeAcceleration;
+	return elapsedTime = Timer::TimeElapsed()*timeAcceleration;
 }
 
 double AdvancedTimer::GlobalTime() {

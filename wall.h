@@ -13,5 +13,5 @@ struct Wall : public Segment {
 		return surf_friction_coef;
 	}
 
-	virtual void Collide(){}
+	void Collide(){}
 };

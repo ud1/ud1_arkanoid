@@ -340,6 +340,7 @@ void Game::DoSimulation() {
 		timer.ResetGlobalTime(global_time);
 		prev_global_time = global_time;
 		mouse.AbsSet(world.player_platform.GetTarget()*field_to_window_scale);
+		world.ResetCurrentTime(global_time);
 	}
 
 	double delta_t = timer.GlobalTime() - prev_global_time;
@@ -379,7 +380,7 @@ void Game::DoBallLoss() {
 		state_switch = false;
 
 		next_state_switch_time = timer.GlobalTime() + 2.0;
-		if (reserve_balls-- <= 0) {
+		if (reserve_balls <= 0) {
 			state = FINAL;
 			state_switch = true;
 		}
@@ -390,11 +391,12 @@ void Game::DoBallLoss() {
 		state_switch = true;
 		ResetBonuses();
 		ResetPlatform();
+		reserve_balls--;
 		ResetBall();
 	}
 
 	std::stringstream str;
-	str << "Balls left " << reserve_balls;
+	str << "Balls left " << (reserve_balls - 1);
 	float wid = render_data.big_chars.GetWidth() * str.str().size();
 	float heig = render_data.big_chars.GetHeight();
 	Vector pos((form_config.window.width - wid) / 2.0f, (form_config.window.height - heig) / 2.0f);
