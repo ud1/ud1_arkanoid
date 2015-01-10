@@ -60,7 +60,7 @@ bool Level::LoadFromFile(const char *filename) {
 			if (bricks.size()) {
 				Level::brick_info &info = bricks[bricks.size() - 1];
 				Mover::pos_lin p_lin;
-				if (iss >> p_lin) {
+				if (!(iss >> p_lin).fail()) {
 					info.mover.pos_lin_funcs.push_back(p_lin);
 				}
 			}
@@ -68,7 +68,7 @@ bool Level::LoadFromFile(const char *filename) {
 			if (bricks.size()) {
 				Level::brick_info &info = bricks[bricks.size() - 1];
 				Mover::pos_sine p_sine;
-				if (iss >> p_sine) {
+				if (!(iss >> p_sine).fail()) {
 					info.mover.pos_sine_funcs.push_back(p_sine);
 				}
 			}
@@ -76,7 +76,7 @@ bool Level::LoadFromFile(const char *filename) {
 			if (bricks.size()) {
 				Level::brick_info &info = bricks[bricks.size() - 1];
 				Mover::angle_lin a_lin;
-				if (iss >> a_lin) {
+				if (!(iss >> a_lin).fail()) {
 					info.mover.angle_lin_funcs.push_back(a_lin);
 				}
 			}
@@ -84,7 +84,7 @@ bool Level::LoadFromFile(const char *filename) {
 			if (bricks.size()) {
 				Level::brick_info &info = bricks[bricks.size() - 1];
 				Mover::angle_sine a_sine;
-				if (iss >> a_sine) {
+				if (!(iss >> a_sine).fail()) {
 					info.mover.angle_sine_funcs.push_back(a_sine);
 				}
 			}
