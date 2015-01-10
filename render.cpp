@@ -131,7 +131,7 @@ bool RenderData::Init(bool disable_effects_) {
 	return true;
 }
 
-void RenderData::RenderUnmovableObjectsAndPlatform() {
+void RenderData::RenderObjectsAndPlatform() {
 	glColor3f(1,1,1);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, elements_textureID);
@@ -261,7 +261,7 @@ void RenderData::RenderField() {
 		glEnable(GL_STENCIL_TEST);
 	}
 
-	RenderUnmovableObjectsAndPlatform();
+	RenderObjectsAndPlatform();
 
 	if (!disable_effects) {
 		glDisable(GL_STENCIL_TEST);

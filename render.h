@@ -68,7 +68,7 @@ protected:
 	GLuint elements_textureID, stat_textureID, background_textureID, clouds_textureID;
 
 	void RenderBackground();
-	void RenderUnmovableObjectsAndPlatform();
+	void RenderObjectsAndPlatform();
 	void StartRenderField(const Vector &field_logic_size);
 	void StartRenderStat() ;
 	void RenderBall(Ball &b);
